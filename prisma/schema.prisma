@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String       @unique @default(uuid())
+  name           String
+  username       String       @unique
+  email          String
+  servers        UserServer[]
+  password       String       @db.Text
+  created_at     DateTime     @default(now())
+  udpated_at     DateTime     @updatedAt
+  user_server_id String
+}
+
+model UserServer {
+  id             String     @unique @default(uuid())
+  duration       String
+  expiry         DateTime
+  created_at     DateTime   @default(now())
+  udpated_at     DateTime   @updatedAt
+  plan           ServerPlan @relation(fields: [server_plan_id], references: [id])
+  user           User       @relation(fields: [user_id], references: [id])
+  user_id        String
+  server_plan_id String
+}
+
+model ServerPlan {
+  id                  String         @unique @default(uuid())
+  name                String
+  created_at          DateTime       @default(now())
+  udpated_at          DateTime       @updatedAt
+  user_server         UserServer[]
+  node                ServerNodePlan @relation(fields: [server_node_plan_id], references: [id])
+  server_node_plan_id String
+}
+
+model ServerNodePlan {
+  id           String       @unique @default(uuid())
+  name         String       @unique
+  location     String
+  max_server   Int
+  cpu          String?
+  ram          String
+  disk         Int
+  dedicated_ip Boolean
+  ports        String
+  backup       Int
+  pricing      Int
+  server_plan  ServerPlan[]
+}
