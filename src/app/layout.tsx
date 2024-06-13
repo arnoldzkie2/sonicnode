@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import TrpcProvider from "./_trpc/TrpcProvider";
 import { ThemeProvider } from "@/components/ui/theme-provider";
+import SessionProviders from "@/components/ui/session-provider";
 
 export const metadata: Metadata = {
   title: "PixelNode",
@@ -15,15 +16,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <TrpcProvider>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-        >
-          <body>{children}</body>
-        </ThemeProvider>
-      </TrpcProvider>
+      <SessionProviders>
+        <TrpcProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+          >
+            <body>{children}</body>
+          </ThemeProvider>
+        </TrpcProvider>
+      </SessionProviders>
     </html>
   );
 }

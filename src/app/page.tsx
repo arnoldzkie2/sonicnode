@@ -1,4 +1,4 @@
-import Header from '@/components/header'
+import Header from '@/components/home/header'
 import React from 'react'
 
 const HomePage = () => {

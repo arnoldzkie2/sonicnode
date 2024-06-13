@@ -1,10 +1,10 @@
 'use client'
 import Link from 'next/link'
-import React, { useState } from 'react'
-import { ModeToggle } from './ui/toggle-theme'
-import { CircleX, DollarSign, FileQuestion, Menu, PhoneIncoming } from 'lucide-react'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from './ui/dropdown-menu'
-import { Button } from './ui/button'
+import React from 'react'
+import { ModeToggle } from '../ui/toggle-theme'
+import { DollarSign, FileQuestion, LogIn, Menu, PhoneIncoming } from 'lucide-react'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from '../ui/dropdown-menu'
+import { Button } from '../ui/button'
 
 const Header = () => {
 
@@ -20,7 +20,7 @@ const Header = () => {
         <DropdownMenuContent>
           <DropdownMenuLabel>Menu List</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuGroup>
+          <DropdownMenuGroup className='text-muted-foreground'>
             <DropdownMenuItem>
               <Link href={'#'}>Pricing</Link>
               <DropdownMenuShortcut>
@@ -47,18 +47,26 @@ const Header = () => {
 
   const largeScreen = (
     <nav className='items-center gap-5 hidden md:flex'>
-      <ul className='flex items-center gap-5'>
-        <Link href={'#'}>Pricing</Link>
-        <Link href={'#'}>About</Link>
-        <Link href={'#'}>Contact</Link>
+      <ul className='flex items-center gap-8 text-muted-foreground text-sm'>
+        <Link className='hover:text-foreground' href={'#'}>Pricing</Link>
+        <Link className='hover:text-foreground' href={'#'}>About</Link>
+        <Link className='hover:text-foreground' href={'#'}>Contact</Link>
       </ul>
       <ModeToggle />
+      <Link href={'/auth'}>
+        <Button className='flex items-center gap-2'>
+          <div>
+            Login
+          </div>
+          <LogIn size={16} />
+        </Button>
+      </Link>
     </nav>
   )
 
   return (
-    <div className='px-5 sm:px-10 sticky top-0 w-screen h-16 border-b md:container flex items-center justify-between backdrop-blur'>
-      <h1 className='text-xl md:text-2xl font-black'>PIXELNODE</h1>
+    <div className='px-5 sm:px-10 sticky top-0 w-screen h-14 border-b md:container flex items-center justify-between backdrop-blur'>
+      <Link href={'/'} className='text-xl font-[1000]'>PIXELNODE</Link>
       {largeScreen}
       {smallScreen}
     </div>
