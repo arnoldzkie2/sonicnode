@@ -8,7 +8,7 @@ import Link from 'next/link'
 
 const Main = () => {
     return (
-        <div className='flex flex-col items-center gap-10 pt-16 md:pt-32 w-full md:h-screen'>
+        <div className='flex flex-col items-center gap-10 pt-32 w-full md:h-screen'>
             <div className='flex flex-col gap-7 text-center items-center sm:w-[70%] md:w-3/4 lg:w-2/3'>
                 <Label className='text-muted-foreground'>We offer free trial up to (7 DAYS)</Label>
                 <h1 className='text-3xl md:text-4xl xl:text-5xl 2xl:text-6xl font-[1000]'>Reliable Minecraft Server Hosting in Asia</h1>

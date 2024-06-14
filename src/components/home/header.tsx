@@ -51,7 +51,7 @@ const Header = () => {
       <Link href={'/auth'}>
         <Button className='flex items-center gap-2'>
           <div>
-            Login
+            Panel
           </div>
           <LogIn size={16} />
         </Button>
