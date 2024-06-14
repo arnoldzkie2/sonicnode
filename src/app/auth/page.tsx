@@ -39,7 +39,7 @@ const Page = () => {
                     <SignupForm />
                 </TabsContent>
             </Tabs>
-        </div >
+        </div>
     )
 }
 

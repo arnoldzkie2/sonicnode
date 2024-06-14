@@ -5,8 +5,9 @@ import { ThemeProvider } from "@/components/ui/theme-provider";
 import SessionProviders from "@/components/ui/session-provider";
 
 export const metadata: Metadata = {
-  title: "PixelNode",
-  description: "Affordable Minecraft Server Hosting",
+  title: "Sonic Node",
+  icons: '/logo.svg',
+  description: "The best minecraft server hosting in asia.",
 };
 
 export default function RootLayout({
