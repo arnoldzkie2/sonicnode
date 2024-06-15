@@ -62,7 +62,7 @@ const Header = () => {
   return (
     <div className='flex top-0 left-0 w-full px-5 padding fixed md:sticky md:p-0 md:w-full h-16 backdrop-blur padding items-center z-50 justify-between border-b'>
       <Link href={'/'} className='text-xl font-[1000] flex items-center gap-2'>
-        <Image src={'/logo.svg'} width={25} height={25} alt='Logo' className='bg-primary rounded-full text-secondary' />
+        <Image src={'/logo.svg'} width={28} height={28} alt='Logo' className='rounded-full text-secondary' />
         Sonic Node
       </Link>
       {largeScreen}
