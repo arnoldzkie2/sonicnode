@@ -1,7 +1,7 @@
 import { PLANS } from '@/constant/plans'
 import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
-import { Cpu,  HardDrive, MemoryStick, Server, ShoppingCart, Users } from 'lucide-react'
+import { Cpu, HardDrive, MemoryStick, Server, ShoppingCart, Users } from 'lucide-react'
 import { Label } from '../ui/label'
 import ReturnToolTip from '../ui/return-tooltip'
 import { Button } from '../ui/button'
@@ -21,7 +21,7 @@ const Pricing = () => {
                                 <div className='flex flex-col gap-1'>
                                     <div className='text-muted-foreground text-base'>{plans.name.toUpperCase()}</div>
                                     <ReturnToolTip
-                                        trigger={<h1 className='font-[1000]'>{plans.ram}MB</h1>}
+                                        trigger={<h1 className='font-[1000] text-primary'>{plans.ram}MB</h1>}
                                         content='Dedicated High Speed RAM'
                                     />
                                 </div>
@@ -29,31 +29,25 @@ const Pricing = () => {
                             </CardTitle>
                             <CardDescription>{plans.description}</CardDescription>
                         </CardHeader>
-                        <CardContent className='flex flex-col gap-3 text-muted-foreground'>
+                        <CardContent className='flex flex-col gap-2 text-muted-foreground'>
                             <div className='flex items-center justify-between'>
+                                <div className='flex items-center gap-2'>
+                                    <ReturnToolTip
+                                        trigger={<HardDrive className='text-foreground' size={20} />}
+                                        content='NVMe Storage (2 GB/s Write, 7 GB/s Read)'
+                                    />
+                                    <Label className='text-mued-foreground'>NVMe Disk: {plans.disk}</Label>
+                                </div>
                                 <div className='flex items-center gap-2'>
                                     <ReturnToolTip
                                         trigger={<Users size={20} />}
                                         content="Recommended player slots"
                                     />
-                                    <Label className='text-foreground'>{plans.players}+ Players</Label>
+                                    <Label className='text-foreground  w-6'>{plans.players}+</Label>
                                 </div>
-                                <div className='flex items-center gap-2'>
-                                    <ReturnToolTip
-                                        trigger={<HardDrive size={20} />}
-                                        content='NVMe Storage (2 GB/s Write, 7 GB/s Read)'
-                                    />
-                                    <Label className='text-foreground'>{plans.disk}</Label>
-                                </div>
-                                <div className='flex items-center gap-2'>
-                                    <ReturnToolTip
-                                        trigger={<Server size={20} />}
-                                        content='Available Server Slots'
-                                    />
-                                    <Label className='text-foreground font-black'>{plans.serverSlots}</Label>
-                                </div>
+
                             </div>
-                            <div className='flex flex-col gap-1.5'>
+                            <div className='flex items-center justify-between'>
                                 <div className='flex items-center gap-2 '>
                                     <ReturnToolTip
                                         trigger={<Cpu size={20} className='text-foreground' />}
@@ -63,16 +57,16 @@ const Pricing = () => {
                                 </div>
                                 <div className='flex items-center gap-2'>
                                     <ReturnToolTip
-                                        trigger={<MemoryStick size={20} className='text-foreground' />}
-                                        content='Uses your disk as additional memory to ensure server stability during peak usage.'
+                                        trigger={<Server size={20} />}
+                                        content='Available Server Slots'
                                     />
-                                    <Label>Swap Disk: {plans.vram}MB</Label>
+                                    <Label className='text-foreground font-black w-6 text-center'>{plans.serverSlots}</Label>
                                 </div>
                             </div>
                             <div className='flex items-end w-full justify-between pt-2 border-t'>
-                                <div className='flex flex-col gap-1.5'>
+                                <div className='flex flex-col gap-1'>
                                     <Label className='text-muted-foreground'>Server cost {'->'}</Label>
-                                    <h1 className='text-foreground font-[1000] text-2xl'>${plans.price}/mo</h1>
+                                    <h1 className='text-foreground font-[1000] border-b-2 w-1/2 border-yellow-400 text-2xl'>${plans.price}/mo</h1>
                                 </div>
                                 <ReturnToolTip
                                     trigger={

@@ -1,25 +1,10 @@
 const PLANS = [
     {
         name: "Wood",
-        cpu: "33%",
-        ram: 512,
-        vram: 1024,
-        disk: "6GB",
-        price: 1.19,
-        serverSlots: 1,
-        description: "Optimal for small Bedrock servers, offering reliable performance",
-        players: 4,
-        payments: {
-            paypal: 'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-7R149165GG9215033MZV5Y7Q'
-        }
-    },
-    {
-        name: "Stone",
         cpu: "66%",
         ram: 1024,
-        vram: 2048,
         disk: "12GB",
-        price: 2.29,
+        price: 2.22,
         serverSlots: 1,
         description: "Suitable for Bedrock servers with enhanced performance and stability.",
         players: 8,
@@ -28,12 +13,11 @@ const PLANS = [
         }
     },
     {
-        name: "Coal",
+        name: "Stone",
         cpu: "100%",
         ram: 1500,
-        vram: 3172,
         disk: "18GB",
-        price: 3.39,
+        price: 3.33,
         serverSlots: 1,
         description: "Ideal for hosting small Java servers or larger Bedrock servers.",
         players: 10,
@@ -42,12 +26,11 @@ const PLANS = [
         }
     },
     {
-        name: "Iron",
+        name: "Coal",
         cpu: "133%",
         ram: 2048,
-        vram: 4096,
         disk: "22GB",
-        price: 4.49,
+        price: 4.44,
         serverSlots: 1,
         description: "High-performance plan for Java servers with extensive mods/plugins.",
         players: 20,
@@ -56,12 +39,11 @@ const PLANS = [
         }
     },
     {
-        name: "Gold",
+        name: "Iron",
         cpu: "200%",
         ram: 3172,
-        vram: 5120,
         disk: "35GB",
-        price: 6.69,
+        price: 6.66,
         serverSlots: 2,
         description: "Optimal for crossplay, supporting both Bedrock and Java servers.",
         players: 30,
@@ -70,12 +52,11 @@ const PLANS = [
         }
     },
     {
-        name: "Redstone",
+        name: "Gold",
         cpu: "200%",
         ram: 5300,
-        vram: 6144,
         disk: "55GB",
-        price: 9.99,
+        price: 8.88,
         serverSlots: 2,
         description: "Advanced plan for mixed communities needing extensive resources.",
         players: 50,
@@ -84,11 +65,10 @@ const PLANS = [
         }
     },
     {
-        name: "Lapiz",
+        name: "Redstone",
         cpu: "400%",
         ram: 6144,
-        vram: 8192,
-        disk: "75GB",
+        disk: "70GB",
         price: 13.99,
         serverSlots: 3,
         description: "High-performance plan tailored for resource-intensive communities.",
@@ -98,12 +78,11 @@ const PLANS = [
         }
     },
     {
-        name: "Diamond",
+        name: "Lapiz",
         cpu: "300%",
         ram: 8192,
-        vram: 7168,
         disk: "80GB",
-        price: 13.99,
+        price: 14.99,
         serverSlots: 3,
         description: "Optimized for diverse gameplay preferences in large communities.",
         players: 80,
@@ -112,10 +91,22 @@ const PLANS = [
         }
     },
     {
+        name: "Diamond",
+        cpu: "400%",
+        ram: 12288,
+        disk: "120GB",
+        price: 18.99,
+        serverSlots: 4,
+        description: "Optimized for diverse gameplay preferences in large communities.",
+        players: 120,
+        payments: {
+            paypal: 'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-0GJ74399JP495673UMZV562Q'
+        }
+    },
+    {
         name: "Netherite",
         cpu: "600%",
         ram: 16384,
-        vram: 16384,
         disk: "170GB",
         price: 27.99,
         serverSlots: 5,
