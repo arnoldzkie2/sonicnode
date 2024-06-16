@@ -8,6 +8,7 @@ import useAuthStore from "@/stores/authStore";
 import { useRouter } from "next/navigation";
 import LoginForm from "@/components/auth/login";
 import SignupForm from "@/components/auth/signup";
+import Image from "next/image";
 
 
 const Page = () => {
@@ -20,14 +21,25 @@ const Page = () => {
 
     useEffect(() => {
         if (session.status === 'authenticated') {
+            router.push('/admin/users')
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [session])
+
+
+    useEffect(() => {
+        if (session.status === 'authenticated') {
             router.push('/dashboard')
         }
     }, [session])
 
     return (
-        <div className='flex flex-col w-screen h-screen justify-center items-center'>
-            <h1 className='pb-10 text-2xl'>SONICNODE</h1>
-            <Tabs defaultValue="signin" value={authPage} onValueChange={(page) => setAuthPage(page)} className="w-[400px]">
+        <div className='flex flex-col w-screen h-screen justify-center items-center px-5 sm:px-10'>
+            <div className='pb-10 text-2xl flex items-center gap-3'>
+                <Image src={"/logo.svg"} alt="Logo" width={35} height={35} />
+                <h1 className="font-[1000] text-3xl">SonicNode</h1>
+            </div>
+            <Tabs defaultValue="signin" value={authPage} onValueChange={(page) => setAuthPage(page)} className="w-full max-w-[400px]">
                 <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="signin">Sign In</TabsTrigger>
                     <TabsTrigger value="signup">Sign Up</TabsTrigger>

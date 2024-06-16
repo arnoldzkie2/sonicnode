@@ -3,16 +3,20 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Label } from '../ui/label'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
+import useAuthStore from '@/stores/authStore'
+import { LoaderCircle } from 'lucide-react'
 
 const LoginForm = () => {
 
+    const { formData, setFormData, logiNUser, loading } = useAuthStore()
+
     return (
-        <form >
+        <form onSubmit={(e) => logiNUser(e)} >
             <Card>
                 <CardHeader>
                     <CardTitle>Sign In</CardTitle>
                     <CardDescription>
-                        Enter your username and password below to sign in and continue your session.
+                        Welcome back! Sign in to manage your Minecraft server.
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2">
@@ -20,7 +24,9 @@ const LoginForm = () => {
                         <Label htmlFor="name">Username</Label>
                         <Input
                             id="name"
-                            name="username"
+                            required
+                            value={formData.username}
+                            onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                             placeholder='Username' />
                     </div>
                     <div className="space-y-1">
@@ -28,14 +34,15 @@ const LoginForm = () => {
                         <div className="relative w-full">
                             <Input
                                 id="password"
-                                name="password"
+                                required
+                                value={formData.password}
+                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                 placeholder='Enter password' />
-                            {/* {loginForm.password && <FontAwesomeIcon icon={isText ? faEyeSlash : faEye} onClick={() => setIsText(prevState => !prevState)} className='cursor-pointer absolute top-2.5 right-3 text-muted-foreground' />} */}
                         </div>
                     </div>
                 </CardContent>
                 <CardFooter>
-                    <Button className='w-full'>Login</Button>
+                    <Button disabled={loading} className='w-full'>{loading ? <LoaderCircle className='animate-spin' size={18} /> : 'Sign In'}</Button>
                 </CardFooter>
             </Card>
         </form>

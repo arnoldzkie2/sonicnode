@@ -3,6 +3,18 @@ import { signIn } from 'next-auth/react'
 import { toast } from 'sonner';
 
 interface AuthProps {
+    formDataSignUp: {
+        username: string;
+        email: string;
+        password: string;
+        confirm_password: string;
+    }
+    setFormDataSignUp: (data: {
+        username: string;
+        email: string;
+        password: string;
+        confirm_password: string;
+    }) => void
     formData: {
         username: string;
         password: string;
@@ -15,28 +27,39 @@ interface AuthProps {
     authPage: string
     setAuthPage: (value: string) => void
     setLoading: (status: boolean) => void
-    loginAdmin(e: React.FormEvent): Promise<void>
+    logiNUser(e: React.FormEvent): Promise<void>
 }
 
 const useAuthStore = create<AuthProps>((set, get) => ({
+    formDataSignUp: {
+        username: '',
+        email: '',
+        password: '',
+        confirm_password: ''
+    },
+    setFormDataSignUp: (data: {
+        username: string;
+        email: string;
+        password: string;
+        confirm_password: string;
+    }) => set({ formDataSignUp: data }),
     formData: {
         username: '',
         password: ''
     },
-    loading: false,
-    authPage: 'signin',
-    setAuthPage: (value) => set({ authPage: value }),
-    setLoading: (status: boolean) => set({ loading: status }),
     setFormData: (data: {
         username: string
         password: string;
     }) => set({ formData: data }),
-
-    async loginAdmin(e: React.FormEvent) {
+    loading: false,
+    authPage: 'signin',
+    setAuthPage: (value) => set({ authPage: value }),
+    setLoading: (status: boolean) => set({ loading: status }),
+    logiNUser: async (e: React.FormEvent) => {
         e.preventDefault()
         try {
 
-            const { setLoading, formData } = get()
+            const { setLoading, formData, setAuthPage } = get()
 
             setLoading(true)
             const result = await signIn('credentials', {

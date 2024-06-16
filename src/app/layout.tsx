@@ -3,6 +3,7 @@ import "./globals.css";
 import TrpcProvider from "./_trpc/TrpcProvider";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import SessionProviders from "@/components/ui/session-provider";
+import { Toaster } from "@/components/ui/sonner"
 
 export const metadata: Metadata = {
   title: "Sonic Node",
@@ -24,7 +25,9 @@ export default function RootLayout({
             defaultTheme="dark"
             enableSystem
           >
-            <body>{children}</body>
+            <body>{children}
+              <Toaster />
+            </body>
           </ThemeProvider>
         </TrpcProvider>
       </SessionProviders>
