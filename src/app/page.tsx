@@ -3,6 +3,7 @@ import Header from '@/components/home/header'
 import Main from '@/components/home/main'
 import Pricing from '@/components/home/pricing'
 import Pterodatyl from '@/components/home/pterodactyl'
+import Trial from '@/components/home/trial'
 import React from 'react'
 
 const HomePage = () => {
@@ -11,6 +12,7 @@ const HomePage = () => {
       <Header />
       <Main />
       <Pterodatyl />
+      <Trial />
       <Pricing />
       <Footer />
     </div>

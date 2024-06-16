@@ -11,8 +11,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 
 const Pricing = () => {
     return (
-        <div className='flex flex-col gap-10 py-16'>
-            <h1 className='text-3xl md:text-4xl font-[1000] self-center'>Explore Our Plans:</h1>
+        <div className='flex flex-col py-16'>
             <div className='flex flex-wrap gap-5 md:gap-10 justify-center'>
                 {PLANS.map((plans, i) => (
                     <Card key={i} className='w-full max-w-80 cursor-pointer hover:shadow-2xl hover:rounded-2xl hover:shadow-yellow-400 hover:scale-[101%] transition-all'>
@@ -36,14 +35,14 @@ const Pricing = () => {
                                         trigger={<HardDrive className='text-foreground' size={20} />}
                                         content='NVMe Storage (2 GB/s Write, 7 GB/s Read)'
                                     />
-                                    <Label className='text-mued-foreground'>NVMe Disk: {plans.disk}</Label>
+                                    <Label className='text-muted-foreground'>NVMe Disk: {plans.disk}</Label>
                                 </div>
                                 <div className='flex items-center gap-2'>
                                     <ReturnToolTip
-                                        trigger={<Users size={20} />}
+                                        trigger={<Users size={20} className='text-foreground' />}
                                         content="Recommended player slots"
                                     />
-                                    <Label className='text-foreground  w-6'>{plans.players}+</Label>
+                                    <Label className='w-6'>{plans.players}+</Label>
                                 </div>
 
                             </div>
@@ -53,14 +52,14 @@ const Pricing = () => {
                                         trigger={<Cpu size={20} className='text-foreground' />}
                                         content="Cpu Power Available"
                                     />
-                                    <Label>Cpu Power: {plans.cpu}</Label>
+                                    <Label>Cpu: {plans.cpu} ({plans.cpu_speed}GHz)</Label>
                                 </div>
                                 <div className='flex items-center gap-2'>
                                     <ReturnToolTip
-                                        trigger={<Server size={20} />}
+                                        trigger={<Server className='text-foreground' size={20} />}
                                         content='Available Server Slots'
                                     />
-                                    <Label className='text-foreground font-black w-6 text-center'>{plans.serverSlots}</Label>
+                                    <Label className='font-[1000] w-6 '>{plans.serverSlots}</Label>
                                 </div>
                             </div>
                             <div className='flex items-end w-full justify-between pt-2 border-t'>

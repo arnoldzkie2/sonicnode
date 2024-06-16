@@ -1,52 +1,14 @@
 const PLANS = [
     {
-        name: "Wood",
-        cpu: "66%",
-        ram: 1024,
-        disk: "12GB",
-        price: 2.22,
-        serverSlots: 1,
-        description: "Suitable for Bedrock servers with enhanced performance and stability.",
-        players: 8,
-        payments: {
-            paypal: 'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-5GP15236G4676750HMZV52GI'
-        }
-    },
-    {
-        name: "Stone",
+        name: "Iron",
         cpu: "100%",
-        ram: 1500,
-        disk: "18GB",
-        price: 3.33,
+        cpu_speed: 2.8,
+        ram: 2048,
+        disk: "20GB",
+        price: 3.49,
         serverSlots: 1,
         description: "Ideal for hosting small Java servers or larger Bedrock servers.",
         players: 10,
-        payments: {
-            paypal: 'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-93W91776G97503647MZV53AI'
-        }
-    },
-    {
-        name: "Coal",
-        cpu: "133%",
-        ram: 2048,
-        disk: "22GB",
-        price: 4.44,
-        serverSlots: 1,
-        description: "High-performance plan for Java servers with extensive mods/plugins.",
-        players: 20,
-        payments: {
-            paypal: 'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-44H24081JW1484946MZV54KI'
-        }
-    },
-    {
-        name: "Iron",
-        cpu: "200%",
-        ram: 3172,
-        disk: "35GB",
-        price: 6.66,
-        serverSlots: 2,
-        description: "Optimal for crossplay, supporting both Bedrock and Java servers.",
-        players: 30,
         payments: {
             paypal: 'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-8EM60800AX367290NMZV543A'
         }
@@ -54,64 +16,69 @@ const PLANS = [
     {
         name: "Gold",
         cpu: "200%",
-        ram: 5300,
-        disk: "55GB",
-        price: 8.88,
-        serverSlots: 2,
+        cpu_speed: 2.8,
+        ram: 4096,
+        disk: "40GB",
+        price: 6.99,
+        serverSlots: 1,
         description: "Advanced plan for mixed communities needing extensive resources.",
-        players: 50,
+        players: 20,
         payments: {
             paypal: 'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-7CF29165AM467003EMZV55TQ'
         }
     },
     {
         name: "Redstone",
-        cpu: "400%",
-        ram: 6144,
-        disk: "70GB",
-        price: 13.99,
-        serverSlots: 3,
+        cpu: "150%",
+        cpu_speed: 3.7,
+        ram: 4096,
+        disk: "45GB",
+        price: 7.77,
+        serverSlots: 1,
         description: "High-performance plan tailored for resource-intensive communities.",
-        players: 80,
+        players: 25,
         payments: {
             paypal: 'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-53W76428X3926293UMZV57WQ'
         }
     },
     {
         name: "Lapiz",
-        cpu: "300%",
-        ram: 8192,
-        disk: "80GB",
-        price: 14.99,
-        serverSlots: 3,
+        cpu: "250%",
+        cpu_speed: 2.8,
+        ram: 6144,
+        disk: "65GB",
+        price: 9.99,
+        serverSlots: 2,
         description: "Optimized for diverse gameplay preferences in large communities.",
-        players: 80,
+        players: 35,
         payments: {
             paypal: 'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-0GJ74399JP495673UMZV562Q'
         }
     },
     {
         name: "Diamond",
-        cpu: "400%",
-        ram: 12288,
-        disk: "120GB",
-        price: 18.99,
-        serverSlots: 4,
+        cpu: "250%",
+        cpu_speed: 3.7,
+        ram: 8192,
+        disk: "90GB",
+        price: 14.99,
+        serverSlots: 2,
         description: "Optimized for diverse gameplay preferences in large communities.",
-        players: 120,
+        players: 50,
         payments: {
             paypal: 'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-0GJ74399JP495673UMZV562Q'
         }
     },
     {
         name: "Netherite",
-        cpu: "600%",
-        ram: 16384,
-        disk: "170GB",
-        price: 27.99,
-        serverSlots: 5,
+        cpu: "350%",
+        cpu_speed: 3.7,
+        ram: 12288,
+        disk: "135GB",
+        price: 22.99,
+        serverSlots: 3,
         description: "Top-tier plan for extensive communities requiring robust server resources.",
-        players: 150,
+        players: 80,
         payments: {
             paypal: 'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-5RN97315AN158084WMZV6AMQ'
         }
