@@ -1,13 +1,12 @@
 import { PLANS } from '@/constant/plans'
 import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
-import { Cpu, HardDrive, MemoryStick, Server, ShoppingCart, Users } from 'lucide-react'
+import { Cpu, HardDrive, Server, ShoppingCart, Users } from 'lucide-react'
 import { Label } from '../ui/label'
 import ReturnToolTip from '../ui/return-tooltip'
 import { Button } from '../ui/button'
 import Image from 'next/image'
 import Link from 'next/link'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from '../ui/dropdown-menu'
 
 const Pricing = () => {
     return (
@@ -54,57 +53,25 @@ const Pricing = () => {
                                     />
                                     <Label>Cpu: {plans.cpu} ({plans.cpu_speed}GHz)</Label>
                                 </div>
-                                <div className='flex items-center gap-2'>
-                                    <ReturnToolTip
-                                        trigger={<Server className='text-foreground' size={20} />}
-                                        content='Available Server Slots'
-                                    />
-                                    <Label className='font-[1000] w-6 '>{plans.serverSlots}</Label>
-                                </div>
                             </div>
                             <div className='flex items-end w-full justify-between pt-2 border-t'>
                                 <div className='flex flex-col gap-1'>
                                     <Label className='text-muted-foreground'>Server cost {'->'}</Label>
-                                    <h1 className='text-foreground font-[1000] border-b-2 w-1/2 border-yellow-400 text-2xl'>${plans.price}/mo</h1>
+                                    <div className='text-foreground flex items-center gap-1.5 font-[1000] border-b-2 border-yellow-400 text-2xl'>
+                                        <ReturnToolTip
+                                            trigger={
+                                                <Image src="/logo.svg" width={23} height={23} alt='Sonic Coin' />
+                                            }
+                                            content='Sonic Coin $1 = 100 Sonic Coins'
+                                        />
+                                        {plans.price}/mo
+                                    </div>
                                 </div>
-                                <ReturnToolTip
-                                    trigger={
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button className='rounded-full w-[55px] h-[55px] bg-muted text-foreground hover:text-white'>
-                                                    <ShoppingCart size={25} />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent className='w-full max-w-80'>
-                                                <DropdownMenuLabel>Payment Method</DropdownMenuLabel>
-                                                <DropdownMenuSeparator />
-                                                <Link href={plans.payments.paypal} target='_blank'>
-                                                    <DropdownMenuItem>
-                                                        Paypal
-                                                        <DropdownMenuShortcut>
-                                                            <Image src={'/payments/paypal.svg'} alt='Paypal' width={20} height={20} className='bg-white w-6 h-6 dark:w-5 dark:h-5 rounded-full p-0.5' />
-                                                        </DropdownMenuShortcut>
-                                                    </DropdownMenuItem>
-                                                </Link>
-                                                <DropdownMenuItem>
-                                                    <Link href={'/payments/gcash.jpg'} target='_blank'>
-                                                        GCash
-                                                    </Link>
-                                                    <DropdownMenuShortcut>
-                                                        <Image src={'/payments/gcash.svg'} alt='Gcash' width={20} height={20} className='bg-white w-6 h-6 dark:w-5 dark:h-5 rounded-full p-0.5' />
-                                                    </DropdownMenuShortcut>
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem>
-                                                    Cypto
-                                                    <DropdownMenuShortcut>
-                                                        <Image src={'/payments/crypto.svg'} alt='Crypto' width={20} height={20} className='bg-white w-6 h-6 dark:w-5 dark:h-5 rounded-full p-0.5' />
-                                                    </DropdownMenuShortcut>
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    }
-                                    content='Subscribe Now'
-                                />
+                                <Link href={'/dashboard'}>
+                                    <Button className='rounded-full w-[55px] h-[55px] bg-muted text-foreground hover:text-white'>
+                                        <ShoppingCart size={25} />
+                                    </Button>
+                                </Link>
                             </div>
                         </CardContent>
                     </Card>

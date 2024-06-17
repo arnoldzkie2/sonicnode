@@ -1,87 +1,75 @@
 const PLANS = [
     {
-        name: "Iron",
-        cpu: "100%",
+        name: "iron",
+        cpu: 100,
+        node: "C-2",
         cpu_speed: 2.8,
         ram: 2048,
-        disk: "20GB",
-        price: 3.49,
-        serverSlots: 1,
+        disk: 20,
+        price: 349,
+        points: 1,
         description: "Ideal for hosting small Java servers or larger Bedrock servers.",
         players: 10,
-        payments: {
-            paypal: 'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-8EM60800AX367290NMZV543A'
-        }
     },
     {
-        name: "Gold",
-        cpu: "200%",
+        name: "gold",
+        cpu: 200,
+        node: "C-2",
         cpu_speed: 2.8,
         ram: 4096,
-        disk: "40GB",
-        price: 6.99,
-        serverSlots: 1,
+        disk: 40,
+        price: 699,
+        points: 2,
         description: "Advanced plan for mixed communities needing extensive resources.",
         players: 20,
-        payments: {
-            paypal: 'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-7CF29165AM467003EMZV55TQ'
-        }
     },
     {
-        name: "Redstone",
-        cpu: "150%",
+        name: "redstone",
+        cpu: 150,
+        node: "H-3",
         cpu_speed: 3.7,
         ram: 4096,
-        disk: "45GB",
-        price: 7.77,
-        serverSlots: 1,
+        disk: 45,
+        price: 777,
+        points: 1,
         description: "High-performance plan tailored for resource-intensive communities.",
         players: 25,
-        payments: {
-            paypal: 'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-53W76428X3926293UMZV57WQ'
-        }
     },
     {
-        name: "Lapiz",
-        cpu: "250%",
+        name: "lapiz",
+        cpu: 250,
+        node: "C-3",
         cpu_speed: 2.8,
         ram: 6144,
-        disk: "65GB",
-        price: 9.99,
-        serverSlots: 2,
+        disk: 65,
+        price: 999,
+        points: 1,
         description: "Optimized for diverse gameplay preferences in large communities.",
         players: 35,
-        payments: {
-            paypal: 'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-0GJ74399JP495673UMZV562Q'
-        }
     },
     {
-        name: "Diamond",
-        cpu: "250%",
+        name: "diamond",
+        cpu: 250,
+        node: "H-3",
         cpu_speed: 3.7,
         ram: 8192,
-        disk: "90GB",
-        price: 14.99,
-        serverSlots: 2,
+        disk: 90,
+        price: 1499,
+        points: 2,
         description: "Optimized for diverse gameplay preferences in large communities.",
         players: 50,
-        payments: {
-            paypal: 'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-0GJ74399JP495673UMZV562Q'
-        }
     },
     {
-        name: "Netherite",
-        cpu: "350%",
+        name: "netherite",
+        cpu: 350,
+        node: "H-3",
         cpu_speed: 3.7,
         ram: 12288,
-        disk: "135GB",
-        price: 22.99,
-        serverSlots: 3,
+        disk: 135,
+        price: 2299,
+        points: 3,
         description: "Top-tier plan for extensive communities requiring robust server resources.",
         players: 80,
-        payments: {
-            paypal: 'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-5RN97315AN158084WMZV6AMQ'
-        }
     }
 ];
 

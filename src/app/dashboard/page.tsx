@@ -1,10 +1,23 @@
-'use client'
-import { signOut } from 'next-auth/react'
+import DashboardHeader from '@/components/dashboad/header'
+import { cookies } from 'next/headers'
 import React from 'react'
-const Dashboard = () => {
+import { caller } from '../_trpc/server'
+import { getAuth } from '@/lib/nextauth'
+import { redirect } from 'next/navigation'
+import DashboardTabs from '@/components/dashboad/dashboard'
+
+const Dashboard = async () => {
+
+    cookies()
+
+    const session = await getAuth()
+    if (!session) redirect('/auth')
+    const dashboardData = await caller.dashboard.getDashboardData()
+
     return (
-        <div className='flex flex-col' onClick={() => signOut()}>
-            Logout
+        <div className='px-5 sm:px-10 md:container'>
+            <DashboardHeader />
+            <DashboardTabs initialData={dashboardData} />
         </div>
     )
 }

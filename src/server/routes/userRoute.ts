@@ -70,5 +70,22 @@ export const userRoute = {
         })
 
         return true
+    }),
+    test: publicProcedure.query(async () => {
+        const data = await db.eggs.findFirst({
+            include: {
+                egg_variables: true
+            }
+        })
+
+        if (!data) throw new TRPCError({
+            code: 'BAD_REQUEST'
+        })
+
+        const dockerImages = JSON.parse(data.docker_images as string)
+
+        const keysArray = Object.values(dockerImages)[0]
+
+        return keysArray
     })
 }

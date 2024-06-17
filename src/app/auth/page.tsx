@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import LoginForm from "@/components/auth/login";
 import SignupForm from "@/components/auth/signup";
 import Image from "next/image";
-
+import Link from "next/link";
 
 const Page = () => {
 
@@ -35,10 +35,10 @@ const Page = () => {
 
     return (
         <div className='flex flex-col w-screen h-screen justify-center items-center px-5 sm:px-10'>
-            <div className='pb-10 text-2xl flex items-center gap-3'>
+            <Link className='pb-10 text-2xl flex items-center gap-3' href="/">
                 <Image src={"/logo.svg"} alt="Logo" width={35} height={35} />
                 <h1 className="font-[1000] text-3xl">SonicNode</h1>
-            </div>
+            </Link>
             <Tabs defaultValue="signin" value={authPage} onValueChange={(page) => setAuthPage(page)} className="w-full max-w-[400px]">
                 <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="signin">Sign In</TabsTrigger>
