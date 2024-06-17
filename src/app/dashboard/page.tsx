@@ -4,9 +4,11 @@ import { caller } from '../_trpc/server'
 import DashboardTabs from '@/components/dashboad/dashboard'
 import { getAuth } from '@/lib/nextauth'
 import { redirect } from 'next/navigation'
+import { cookies } from 'next/headers'
 
 const Dashboard = async () => {
 
+    cookies()
     const session = await getAuth()
     if (!session) redirect('/auth')
     const dashboardData = await caller.dashboard.getDashboardData()
