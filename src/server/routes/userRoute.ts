@@ -20,6 +20,7 @@ export const userRoute = {
         email: z.string(),
         password: z.string()
     })).mutation(async (opts) => {
+
         try {
 
             const [existingUsername, existingEmail] = await Promise.all([
@@ -47,5 +48,12 @@ export const userRoute = {
                 message: "Something went wron"
             })
         }
+    }),
+    test: publicProcedure.query(async () => {
+
+        const data = JSON.parse("{\"maxPoints\":4,\"totalPoints\":0,\"remainingPoints\":4}")
+        const serverDescription = new Date().toJSON()
+
+        return serverDescription
     })
 }

@@ -1,25 +1,14 @@
-'use client'
 import React from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 import { caller } from '@/app/_trpc/server'
-import { BadgeCent, NotepadText, Server } from 'lucide-react'
+import { BadgeCent, Server, ShoppingCart } from 'lucide-react'
 import UserServers from './userservers'
 import ServerPlans from './server-plans'
-import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
+import UserCredits from './user-credits'
 
 const DashboardTabs = ({ initialData }: {
     initialData: Awaited<ReturnType<(typeof caller['dashboard']['getDashboardData'])>>
 }) => {
-
-    const router = useRouter()
-
-    const session = useSession({
-        required: true,
-        onUnauthenticated() {
-            router.push('/auth')
-        },
-    })
 
     return (
         <div className='pt-24 md:pt-10'>
@@ -31,21 +20,23 @@ const DashboardTabs = ({ initialData }: {
                     </TabsTrigger>
                     <TabsTrigger value="plans" className='flex items-center gap-2'>
                         <div className='hidden sm:block'>Plans</div>
-                        <NotepadText size={18} />
+                        <ShoppingCart size={18} />
                     </TabsTrigger>
                     <TabsTrigger value="credits" className='flex items-center gap-2'>
-                        <div className='hidden sm:block'>Credits</div>
+                        <div className='hidden sm:block'>Coins</div>
                         <BadgeCent size={18} />
                     </TabsTrigger>
                 </TabsList>
                 <TabsContent value="servers" className='w-full flex justify-center'>
                     <UserServers initialData={initialData} />
                 </TabsContent>
-                <TabsContent value="plans">
+                <TabsContent value="plans" className='w-full'>
                     <ServerPlans eggs={initialData.eggs} />
                 </TabsContent>
-                <TabsContent value="credits">
-                    Credits..
+                <TabsContent value="credits" className='w-full'>
+                    <UserCredits
+                        credits={initialData.credits}
+                        totalMonthlyBilling={initialData.totalMonthlyBilling} />
                 </TabsContent>
             </Tabs>
         </div>

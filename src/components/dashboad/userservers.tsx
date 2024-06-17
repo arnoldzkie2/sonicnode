@@ -1,6 +1,6 @@
 import { caller } from '@/app/_trpc/server'
 import React from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
 import { Label } from '../ui/label'
 import Link from 'next/link'
 import { Button } from '../ui/button'
@@ -27,23 +27,24 @@ const UserServers = ({ initialData }: Props) => {
                     </Button>
                 </Link>
             </div>
-            <div className='flex flex-wrap w-full gap-10'>
+            <div className='flex flex-wrap w-full gap-5'>
                 {
                     servers.length > 0 && servers.map((server, i) => (
                         <Card key={i} className='w-full'>
                             <CardHeader>
                                 <CardTitle>{server.name}</CardTitle>
+                                <CardDescription>Next Billing: {new Date(server.description).toLocaleDateString()}</CardDescription>
                             </CardHeader>
                             <CardContent className='flex flex-col gap-2 text-muted-foreground'>
                                 <div className='flex w-full justify-between'>
-                                    <div className='flex items-center gap-2'>
+                                    <div className='flex items-center gap-1.5'>
                                         <ReturnToolTip
                                             trigger={<MemoryStick className='text-foreground' size={20} />}
                                             content='Dedicated Fast Memory Speed'
                                         />
                                         <Label className='text-muted-foreground'>Ram: {server.memory}MB</Label>
                                     </div>
-                                    <div className='flex items-center gap-2 '>
+                                    <div className='flex items-center gap-1.5 w-20'>
                                         <ReturnToolTip
                                             trigger={<Cpu size={20} className='text-foreground' />}
                                             content="Cpu Power Available"
@@ -52,19 +53,19 @@ const UserServers = ({ initialData }: Props) => {
                                     </div>
                                 </div>
                                 <div className='flex w-full justify-between'>
-                                    <div className='flex items-center gap-2'>
+                                    <div className='flex items-center gap-1.5'>
                                         <ReturnToolTip
                                             trigger={<HardDrive className='text-foreground' size={20} />}
                                             content='NVMe Storage (2 GB/s Write, 7 GB/s Read)'
                                         />
                                         <Label className='text-muted-foreground'>Disk: {server.disk}MB</Label>
                                     </div>
-                                    <div className='flex items-center gap-2 w-16'>
+                                    <div className='flex items-center gap-1.5 w-20'>
                                         <ReturnToolTip
                                             trigger={<Image src={'/logo.svg'} alt='Sonic Coin' width={20} height={20} />}
                                             content='Server Renewal Cost'
                                         />
-                                        <Label className='text-muted-foreground'>{server.renewal}/mo</Label>
+                                        <Label className='text-muted-foreground font-[1000]'>{server.renewal}/<span className='text-xs font-normal'>30D</span></Label>
                                     </div>
                                 </div>
                             </CardContent>

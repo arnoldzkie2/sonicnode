@@ -9,7 +9,8 @@ const LogoutButton = () => {
     return (
         <>
             <Button className='md:flex items-center gap-2' variant={'outline'} onClick={() => signOut({
-                redirect: false
+                redirect: true,
+                callbackUrl: '/'
             })}>
                 <div className='hidden md:flex'>
                     Logout

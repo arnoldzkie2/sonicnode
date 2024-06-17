@@ -2,6 +2,7 @@ import React from 'react'
 import { Label } from '../ui/label'
 import { Button } from '../ui/button'
 import { Separator } from '../ui/separator'
+import Link from 'next/link'
 
 const Trial = () => {
     return (
@@ -11,7 +12,9 @@ const Trial = () => {
                 <h1 className='text-4xl font-[1000]'>Experience Minecraft Hosting for Free</h1>
                 <h2 className='text-muted-foreground text-lg'>Explore our Minecraft server hosting with a free trial. Discover the advantages of reliable performance, flexible configurations, and dedicated support for your gaming community.</h2>
                 <div className='flex justify-center w-full'>
-                    <Button className='w-full max-w-52'>Claim Free Server</Button>
+                    <Link href={'/auth'}>
+                        <Button className='w-full max-w-52'>Claim Free Server</Button>
+                    </Link>
                 </div>
             </div>
             <Separator className='hidden md:flex' />

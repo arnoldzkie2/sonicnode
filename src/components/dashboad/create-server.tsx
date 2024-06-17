@@ -32,8 +32,7 @@ const CreateServer = ({ eggs, setServerFormData, serverFormData, plan }: {
 
     const createServer = trpc.dashboard.createServer.useMutation({
         onError: (err) => {
-            console.log(err.message)
-            return toast.error(err.message, {
+            toast.error(err.message, {
                 position: 'bottom-center'
             })
         },
@@ -41,7 +40,7 @@ const CreateServer = ({ eggs, setServerFormData, serverFormData, plan }: {
             toast.success("Success! you successfully create a server", {
                 position: 'bottom-center'
             })
-            return setOpen(false)
+            window.location.reload()
         }
     })
 
@@ -63,17 +62,17 @@ const CreateServer = ({ eggs, setServerFormData, serverFormData, plan }: {
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <Separator />
-                <form className='flex flex-col space-y-2' onSubmit={async (e) => {
+                <form className='flex flex-col space-y-4' onSubmit={async (e) => {
                     e.preventDefault()
                     const data = { ...serverFormData, egg: Number(serverFormData.egg) }
                     await createServer.mutateAsync(data)
                 }}>
-                    <div className='flex flex-col space-y-1'>
+                    <div className='flex flex-col space-y-2'>
                         <Label>Server Name</Label>
                         <Input required value={serverFormData.name} onChange={(e) => setServerFormData(prev => ({ ...prev, name: e.target.value }))} />
                     </div>
 
-                    <div className='flex flex-col space-y-1'>
+                    <div className='flex flex-col space-y-2'>
                         <Label>Server Type</Label>
                         <Select value={serverFormData.egg} onValueChange={(val) => setServerFormData(prev => ({ ...prev, egg: val }))}>
                             <SelectTrigger className="w-full">

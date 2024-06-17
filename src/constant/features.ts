@@ -3,7 +3,7 @@ const FEATURES = [
     'Low Latency (20-70ms in Asia)',
     '5 Dedicated Ports',
     '24/7 Online (99% Uptime)',
-    'CPU: AMD EPYC (2.8GHz | 3.7GHz)',
+    'CPU: AMD EPYC 7282 (2.8 - 3.2GHz)',
     'Locations: Singapore, India, and Japan',
     'NVMe Storage (2 GB/s Write, 7 GB/s Read)',
     'DDoS Protection Included',

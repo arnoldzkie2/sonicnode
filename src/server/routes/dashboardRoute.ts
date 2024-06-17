@@ -5,7 +5,12 @@ import db from "@/lib/db";
 import z from 'zod'
 import { PLANS } from "@/constant/plans";
 import { sonicApi } from "@/lib/api";
-import { cookies } from "next/headers";
+
+interface NodeDescription {
+    maxPoints: number
+    totalPoints: number
+    remainingPoints: number
+}
 
 export const dashboadRoute = {
     getDashboardData: publicProcedure.query(async () => {
@@ -15,30 +20,35 @@ export const dashboadRoute = {
             code: "UNAUTHORIZED"
         })
 
-        const user = await db.users.findUnique({
-            where: { id: auth.user.id }, include: {
-                servers: true
-            }
-        })
+        const [user, eggs] = await Promise.all([
+            db.users.findUnique({
+                where: { id: auth.user.id }, include: {
+                    servers: true
+                }
+            }),
+            db.eggs.findMany({
+                select: {
+                    name: true,
+                    id: true
+                }
+            })
+        ])
         if (!user) throw new TRPCError({
             code: "BAD_REQUEST",
             message: "Something went wrong when getting user servers"
         })
 
-        const eggs = await db.eggs.findMany({
-            select: {
-                name: true,
-                id: true
-            }
-        })
+        const totalMonthlyBilling = user.servers.reduce((total, server) => {
+            return total + server.renewal
+        }, 0)
 
-        const userData = {
+        const dashboardData = {
             credits: user.store_balance,
             servers: user.servers,
-            eggs
+            eggs, totalMonthlyBilling
         }
 
-        return userData
+        return dashboardData
 
     }),
     createServer: publicProcedure.input(z.object({
@@ -46,6 +56,21 @@ export const dashboadRoute = {
         name: z.string(),
         egg: z.number()
     })).mutation(async (opts) => {
+
+        const { plan, name, egg } = opts.input
+
+        if (!name) throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Server name is required"
+        })
+        if (!plan) throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Select a plan"
+        })
+        if (!egg) throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Server Type is required"
+        })
 
         const auth = await getAuth()
         if (!auth) throw new TRPCError({
@@ -58,10 +83,12 @@ export const dashboadRoute = {
             message: "User does not exist"
         })
 
+        //check if plan exist
         const selectedPlan = PLANS.find(plan => plan.name.toLowerCase() === opts.input.plan.toLowerCase());
 
         if (selectedPlan) {
 
+            //check if user has enough sonic coin to purchase a server
             if (user.store_balance < selectedPlan.price) throw new TRPCError({
                 code: "BAD_REQUEST",
                 message: "You don't have enough balance to buy this plan"
@@ -79,19 +106,12 @@ export const dashboadRoute = {
 
                 const availableNode = selectedNodes.filter(node => {
 
-                    const totalPoints = node.servers.reduce((total, server) => {
-                        return total + Number(server.description)
-                    }, 0)
-
-                    const maxPoints = Number(node.description);
-
-                    // Calculate remaining points
-                    const remainingPoints = maxPoints - totalPoints;
-
+                    const nodeDescription: NodeDescription = JSON.parse(node.description as string)
+                    const { remainingPoints, maxPoints, totalPoints } = nodeDescription
                     const requiredPoints = selectedPlan.points
 
                     // Check if remainingPoints meets requirement
-                    if (remainingPoints >= requiredPoints) {
+                    if ((remainingPoints >= requiredPoints) && (totalPoints < maxPoints)) {
                         return true; // Node qualifies based on conditions
                     } else {
                         return false; // Node does not qualify
@@ -101,10 +121,11 @@ export const dashboadRoute = {
                 if (availableNode.length > 0) {
 
                     try {
+                        //get the first selected node
+                        const selectedNode = availableNode[0]
 
                         //get all the node allocations
-
-                        const { data } = await sonicApi.get(`/nodes/${availableNode[0].id}/allocations`)
+                        const { data } = await sonicApi.get(`/nodes/${selectedNode.id}/allocations`)
 
                         if (data.data.length > 0) {
 
@@ -130,8 +151,18 @@ export const dashboadRoute = {
                                     return acc;
                                 }, {})
 
-                                const serverName = opts.input.name
-                                const serverDescription = selectedPlan.points
+                                // Get the current date
+                                const currentDate = new Date();
+
+                                // Function to add 30 days to the current date
+                                const getNextBillingDate = (date: Date) => {
+                                    let nextBillingDate = new Date(date);
+                                    nextBillingDate.setDate(nextBillingDate.getDate() + 30);
+                                    return nextBillingDate;
+                                }
+                                const nextBillingDate = getNextBillingDate(currentDate);
+
+                                const serverDescription = nextBillingDate.toJSON()
                                 const selectedImage = Object.values(dockerImages)[0] as string
                                 const defaultPortID = unassignedAllocation.attributes.id
                                 const resources = {
@@ -149,10 +180,11 @@ export const dashboadRoute = {
 
                                 try {
 
+                                    //make an api call to create the server 
                                     const { data } = await sonicApi.post('/servers', {
-                                        name: serverName,
+                                        name: opts.input.name,
                                         user: user.id,
-                                        description: String(serverDescription),
+                                        description: serverDescription,
                                         nest: checkEgg.nest_id,
                                         egg: checkEgg.id,
                                         docker_image: selectedImage,
@@ -168,10 +200,21 @@ export const dashboadRoute = {
                                         }
                                     })
 
+                                    //if the server successfully created update the usercredits,server renewal cost, node points
                                     if (data) {
 
+                                        //get the node points details
+                                        const nodePoints: NodeDescription = JSON.parse(selectedNode.description as string)
+                                        const { remainingPoints, totalPoints, maxPoints } = nodePoints
+
+                                        const newNodePoints = JSON.stringify({
+                                            maxPoints,
+                                            totalPoints: totalPoints + selectedPlan.points,
+                                            remainingPoints: remainingPoints - selectedPlan.points
+                                        })
+
                                         //update user credits
-                                        const [updateUserCredit, updateServerRenewal] = await Promise.all([
+                                        const [updateUserCredit, updateServerRenewal, updateNodePoints] = await Promise.all([
                                             db.users.update({
                                                 where: { id: user.id },
                                                 data: { store_balance: user.store_balance - selectedPlan.price }
@@ -179,6 +222,10 @@ export const dashboadRoute = {
                                             db.servers.update({
                                                 where: { id: data.attributes.id as number },
                                                 data: { renewal: selectedPlan.price }
+                                            }),
+                                            db.nodes.update({
+                                                where: { id: selectedNode.id },
+                                                data: { description: newNodePoints }
                                             })
                                         ])
 
@@ -189,6 +236,10 @@ export const dashboadRoute = {
                                         if (!updateServerRenewal) throw new TRPCError({
                                             code: "BAD_REQUEST",
                                             message: "Failed to deduct user credit"
+                                        })
+                                        if (!updateNodePoints) throw new TRPCError({
+                                            code: "BAD_REQUEST",
+                                            message: " Faild to update node new points"
                                         })
 
                                         return true
@@ -203,6 +254,8 @@ export const dashboadRoute = {
                                 }
 
                             } else {
+
+                                //throw an error of node doesn't have available ports
                                 throw new TRPCError({
                                     code: "BAD_REQUEST",
                                     message: "Node doesn't have available ports"
@@ -240,8 +293,11 @@ export const dashboadRoute = {
                     message: "No available node please contact our support team."
                 })
             }
+
         } else {
-            throw new TRPCError({ code: "BAD_REQUEST", message: "Plan does not exist" })
+
+            //throw an error if plan does not exist
+            throw new TRPCError({ code: 'NOT_FOUND', message: "Plan does not exist" })
         }
     })
 }
