@@ -47,45 +47,5 @@ export const userRoute = {
                 message: "Something went wron"
             })
         }
-    }),
-    updateUserData: publicProcedure.input(z.object({
-        email: z.string(),
-        username: z.string(),
-        first_name: z.string(),
-        last_name: z.string(),
-        password: z.string()
-
-    })).mutation(async (opts) => {
-
-        const auth = await getAuth()
-        if (!auth) throw new TRPCError({
-            code: "UNAUTHORIZED"
-        })
-
-        const { data } = await sonicApi.patch(`/users/${auth.user.id}`, opts.input)
-
-        if (!data) throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: "Something Went Wrong"
-        })
-
-        return true
-    }),
-    test: publicProcedure.query(async () => {
-        const data = await db.eggs.findFirst({
-            include: {
-                egg_variables: true
-            }
-        })
-
-        if (!data) throw new TRPCError({
-            code: 'BAD_REQUEST'
-        })
-
-        const dockerImages = JSON.parse(data.docker_images as string)
-
-        const keysArray = Object.values(dockerImages)[0]
-
-        return keysArray
     })
 }

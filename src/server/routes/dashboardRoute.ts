@@ -185,6 +185,10 @@ export const dashboadRoute = {
                                             code: "BAD_REQUEST",
                                             message: "Failed to update user credit"
                                         })
+                                        if (!updateServerRenewal) throw new TRPCError({
+                                            code: "BAD_REQUEST",
+                                            message: "Failed to deduct user credit"
+                                        })
 
                                         return true
                                     }

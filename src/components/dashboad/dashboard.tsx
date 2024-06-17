@@ -1,7 +1,7 @@
 import React from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 import { caller } from '@/app/_trpc/server'
-import { BadgeCent, NotepadText, Server, User } from 'lucide-react'
+import { BadgeCent, NotepadText, Server } from 'lucide-react'
 import UserServers from './userservers'
 import ServerPlans from './server-plans'
 
@@ -25,7 +25,7 @@ const DashboardTabs = ({ initialData }: {
                         <BadgeCent size={18} />
                     </TabsTrigger>
                 </TabsList>
-                <TabsContent value="servers">
+                <TabsContent value="servers" className='w-full flex justify-center'>
                     <UserServers initialData={initialData} />
                 </TabsContent>
                 <TabsContent value="plans">
