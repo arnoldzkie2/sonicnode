@@ -7,11 +7,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
 import { Button } from '../ui/button'
 import Image from 'next/image'
 import { Link as ScrollLink } from 'react-scroll'
-import { useSession } from 'next-auth/react'
 
 const Header = () => {
-
-  const session = useSession()
 
   const smallScreen = (
     <nav className='flex items-center gap-5 md:hidden'>
@@ -34,21 +31,14 @@ const Header = () => {
                 </DropdownMenuShortcut>
               </DropdownMenuItem>
             </ScrollLink>
-            {session && session.status === 'authenticated' ?
-              <Link href={'/dashboard'}>
-                <DropdownMenuItem>
-                  Dashboard
-                </DropdownMenuItem>
-              </Link> :
-              <Link href={'/auth'}>
-                <DropdownMenuItem>
-                  Sign In
-                  <DropdownMenuShortcut>
-                    <LogInIcon size={16} />
-                  </DropdownMenuShortcut>
-                </DropdownMenuItem>
-              </Link>
-            }
+            <Link href={'/auth'}>
+              <DropdownMenuItem>
+                Sign In
+                <DropdownMenuShortcut>
+                  <LogInIcon size={16} />
+                </DropdownMenuShortcut>
+              </DropdownMenuItem>
+            </Link>
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -64,24 +54,14 @@ const Header = () => {
         </ScrollLink>
       </ul>
       <ModeToggle />
-      {
-        session && session.status === 'authenticated' ?
-          <Link href={'/dashboard'}>
-            <Button className='flex items-center gap-2'>
-              <div>
-                Dashboard
-              </div>
-            </Button>
-          </Link> :
-          <Link href={'/auth'}>
-            <Button className='flex items-center gap-2'>
-              <div>
-                Sign in
-              </div>
-              <LogIn size={16} />
-            </Button>
-          </Link>
-      }
+      <Link href={'/auth'}>
+        <Button className='flex items-center gap-2'>
+          <div>
+            Sign in
+          </div>
+          <LogIn size={16} />
+        </Button>
+      </Link>
     </nav>
   )
 
