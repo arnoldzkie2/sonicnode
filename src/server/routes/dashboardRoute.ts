@@ -5,6 +5,7 @@ import db from "@/lib/db";
 import z from 'zod'
 import { PLANS } from "@/constant/plans";
 import { sonicApi } from "@/lib/api";
+import { cookies } from "next/headers";
 
 export const dashboadRoute = {
     getDashboardData: publicProcedure.query(async () => {

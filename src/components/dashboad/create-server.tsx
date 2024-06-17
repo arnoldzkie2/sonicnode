@@ -14,7 +14,7 @@ const CreateServer = ({ eggs, setServerFormData, serverFormData, plan }: {
     eggs: {
         name: string
         id: number
-    }[]
+    }[] | undefined
     plan: string
     setServerFormData: React.Dispatch<React.SetStateAction<{
         plan: string;
@@ -81,7 +81,7 @@ const CreateServer = ({ eggs, setServerFormData, serverFormData, plan }: {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectGroup>
-                                    {eggs.map(egg => (
+                                    {eggs && eggs.length && eggs.map(egg => (
                                         <SelectItem key={egg.id} value={String(egg.id)}>{egg.name}</SelectItem>
                                     ))}
                                 </SelectGroup>

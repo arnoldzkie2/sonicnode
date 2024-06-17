@@ -12,7 +12,7 @@ const ServerPlans = ({ eggs }: {
   eggs: {
     name: string,
     id: number
-  }[]
+  }[] | undefined
 }) => {
 
   const [serverFormData, setServerFormData] = useState({

@@ -1,13 +1,26 @@
+'use client'
 import React from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 import { caller } from '@/app/_trpc/server'
 import { BadgeCent, NotepadText, Server } from 'lucide-react'
 import UserServers from './userservers'
 import ServerPlans from './server-plans'
+import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 
 const DashboardTabs = ({ initialData }: {
     initialData: Awaited<ReturnType<(typeof caller['dashboard']['getDashboardData'])>>
 }) => {
+
+    const router = useRouter()
+
+    const session = useSession({
+        required: true,
+        onUnauthenticated() {
+            router.push('/auth')
+        },
+    })
+
     return (
         <div className='pt-24 md:pt-10'>
             <Tabs defaultValue="servers" className="w-full flex flex-col items-center">

@@ -29,7 +29,7 @@ const UserServers = ({ initialData }: Props) => {
             </div>
             <div className='flex flex-wrap w-full gap-10'>
                 {
-                    servers.map((server, i) => (
+                    servers.length > 0 && servers.map((server, i) => (
                         <Card key={i} className='w-full'>
                             <CardHeader>
                                 <CardTitle>{server.name}</CardTitle>
