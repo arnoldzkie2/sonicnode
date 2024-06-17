@@ -35,7 +35,7 @@ const ServerPlans = ({ eggs }: {
                     content='Dedicated High Speed RAM'
                   />
                 </div>
-                <Image src={`/ores/${plan.name.toLowerCase()}.png`} alt='Ores' width={70} height={70} />
+                <Image src={`/ores/${plan.name.toLowerCase()}.png`} alt='Ores' width={60} height={60} />
               </CardTitle>
               <CardDescription>{plan.description}</CardDescription>
             </CardHeader>
