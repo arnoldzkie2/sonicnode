@@ -26,7 +26,7 @@ const Header = () => {
           <DropdownMenuLabel>Menu List</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup className='text-muted-foreground'>
-            <ScrollLink to='plans' smooth={true} duration={2000}>
+            <ScrollLink href='#plans' to='plans' smooth={true} duration={2000}>
               <DropdownMenuItem>
                 Plans
                 <DropdownMenuShortcut>
@@ -34,7 +34,7 @@ const Header = () => {
                 </DropdownMenuShortcut>
               </DropdownMenuItem>
             </ScrollLink>
-            {session.status === 'authenticated' ?
+            {session && session.status === 'authenticated' ?
               <Link href={'/dashboard'}>
                 <DropdownMenuItem>
                   Dashboard
@@ -58,14 +58,14 @@ const Header = () => {
   const largeScreen = (
     <nav className='items-center gap-5 hidden md:flex'>
       <ul className='flex items-center gap-8 text-muted-foreground text-sm'>
-        <ScrollLink to='plans' smooth={true} duration={2000} className='hover:text-foreground cursor-pointer flex items-center gap-2'>
+        <ScrollLink href='#plans' to='plans' smooth={true} duration={2000} className='hover:text-foreground cursor-pointer flex items-center gap-2'>
           Plans
           <NotepadText size={16} className='' />
         </ScrollLink>
       </ul>
       <ModeToggle />
       {
-        session.status === 'authenticated' ?
+        session && session.status === 'authenticated' ?
           <Link href={'/dashboard'}>
             <Button className='flex items-center gap-2'>
               <div>
