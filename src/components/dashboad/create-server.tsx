@@ -63,10 +63,10 @@ const CreateServer = ({ eggs, setServerFormData, serverFormData, plan }: {
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <Separator />
-                <form className='flex flex-col space-y-2' onSubmit={(e) => {
+                <form className='flex flex-col space-y-2' onSubmit={async (e) => {
                     e.preventDefault()
                     const data = { ...serverFormData, egg: Number(serverFormData.egg) }
-                    createServer.mutate(data)
+                    await createServer.mutateAsync(data)
                 }}>
                     <div className='flex flex-col space-y-1'>
                         <Label>Server Name</Label>

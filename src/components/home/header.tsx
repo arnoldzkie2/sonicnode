@@ -13,8 +13,6 @@ const Header = () => {
 
   const session = useSession()
 
-  console.log(session)
-
   const smallScreen = (
     <nav className='flex items-center gap-5 md:hidden'>
       <ModeToggle />
@@ -36,7 +34,7 @@ const Header = () => {
                 </DropdownMenuShortcut>
               </DropdownMenuItem>
             </ScrollLink>
-            {session.status === 'authenticated' ?
+            {session && session.status === 'authenticated' ?
               <Link href={'/dashboard'}>
                 <DropdownMenuItem>
                   Dashboard

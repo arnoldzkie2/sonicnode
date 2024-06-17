@@ -1,14 +1,11 @@
 import DashboardHeader from '@/components/dashboad/header'
-import { cookies } from 'next/headers'
 import React from 'react'
 import { caller } from '../_trpc/server'
+import DashboardTabs from '@/components/dashboad/dashboard'
 import { getAuth } from '@/lib/nextauth'
 import { redirect } from 'next/navigation'
-import DashboardTabs from '@/components/dashboad/dashboard'
 
 const Dashboard = async () => {
-
-    cookies()
 
     const session = await getAuth()
     if (!session) redirect('/auth')

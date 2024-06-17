@@ -54,7 +54,7 @@ export const dashboadRoute = {
         const user = await db.users.findUnique({ where: { id: auth.user.id } })
         if (!user) throw new TRPCError({
             code: 'NOT_FOUND',
-            message: "User does not exista"
+            message: "User does not exist"
         })
 
         const selectedPlan = PLANS.find(plan => plan.name.toLowerCase() === opts.input.plan.toLowerCase());

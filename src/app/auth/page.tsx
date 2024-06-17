@@ -1,7 +1,6 @@
+'use client'
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unescaped-entities */
-'use client'
-import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useAuthStore from "@/stores/authStore";
@@ -10,6 +9,7 @@ import LoginForm from "@/components/auth/login";
 import SignupForm from "@/components/auth/signup";
 import Image from "next/image";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 const Page = () => {
 
@@ -18,14 +18,6 @@ const Page = () => {
 
     const authPage = useAuthStore(s => s.authPage)
     const setAuthPage = useAuthStore(s => s.setAuthPage)
-
-    useEffect(() => {
-        if (session.status === 'authenticated') {
-            router.push('/admin/users')
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [session])
-
 
     useEffect(() => {
         if (session.status === 'authenticated') {

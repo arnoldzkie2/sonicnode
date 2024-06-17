@@ -59,7 +59,7 @@ const useAuthStore = create<AuthProps>((set, get) => ({
         e.preventDefault()
         try {
 
-            const { setLoading, formData, setAuthPage } = get()
+            const { setLoading, formData } = get()
 
             setLoading(true)
             const result = await signIn('credentials', {
