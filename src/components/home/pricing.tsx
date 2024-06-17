@@ -1,7 +1,7 @@
 import { PLANS } from '@/constant/plans'
 import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
-import { Cpu, HardDrive, Server, ShoppingCart, Users } from 'lucide-react'
+import { Cpu, HardDrive, ShoppingCart, Users } from 'lucide-react'
 import { Label } from '../ui/label'
 import ReturnToolTip from '../ui/return-tooltip'
 import { Button } from '../ui/button'

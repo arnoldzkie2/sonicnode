@@ -22,7 +22,7 @@ const ServerPlans = ({ eggs }: {
   })
 
   return (
-    <div className='flex flex-col py-16' id='plans'>
+    <div className='flex flex-col pt-5' id='plans'>
       <div className='flex flex-wrap gap-5 md:gap-10 justify-center'>
         {PLANS.map((plan, i) => (
           <Card key={i} className='w-full max-w-80 cursor-pointer hover:shadow-2xl hover:rounded-2xl hover:shadow-yellow-400 hover:scale-[101%] transition-all'>

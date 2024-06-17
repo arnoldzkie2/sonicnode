@@ -20,7 +20,7 @@ const UserServers = ({ initialData }: Props) => {
         <div className='flex pt-5 flex-col gap-2 w-full max-w-[500px]'>
             <div className='border-b pb-3 mb-3 flex items-center gap-5 w-full justify-between'>
                 <Label className='text-base'>{"Total: "} {servers.length}</Label>
-                <Link href={process.env.NEXT_PUBLIC_APP_URL as string}>
+                <Link href={process.env.NEXT_PUBLIC_APP_URL as string || '/'}>
                     <Button className='flex items-center gap-2'>
                         <div>Panel</div>
                         <LogIn size={16} />
