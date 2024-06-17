@@ -65,7 +65,7 @@ const Header = () => {
       </ul>
       <ModeToggle />
       {
-        session.status === 'authenticated' ?
+        session && session.status === 'authenticated' ?
           <Link href={'/dashboard'}>
             <Button className='flex items-center gap-2'>
               <div>
