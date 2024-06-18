@@ -20,6 +20,8 @@ interface SonicInfo {
     deletion_countdown: number;
 }
 
+export type { SonicInfo, NodeDescription }
+
 export const serverRoute = {
     createServer: publicProcedure.input(z.object({
         plan: z.string(),

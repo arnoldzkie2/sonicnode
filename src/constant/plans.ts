@@ -5,7 +5,7 @@ const PLANS = [
         node: "C-1",
         cpu_speed: 3.2,
         ram: 1536,
-        disk: 20,
+        disk: 15,
         price: 300,
         location: "JPN",
         points: 1,

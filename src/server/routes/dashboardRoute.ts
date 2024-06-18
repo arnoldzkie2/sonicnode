@@ -2,6 +2,7 @@ import { getAuth } from "@/lib/nextauth";
 import { publicProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import db from "@/lib/db";
+import { SonicInfo } from "./serverRoute";
 
 export const dashboadRoute = {
     getDashboardData: publicProcedure.query(async () => {
@@ -36,7 +37,13 @@ export const dashboadRoute = {
             })
 
             const totalMonthlyBilling = user.servers.reduce((total, server) => {
-                return total + server.renewal
+                const serverInfo = JSON.parse(server.sonic_info || "{}") as SonicInfo
+
+                if (serverInfo.renewal) {
+                    return total + serverInfo.renewal
+                }
+
+                return total
             }, 0)
 
             const dashboardData = {
