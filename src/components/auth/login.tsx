@@ -19,12 +19,13 @@ const LoginForm = () => {
     return (
         <form onSubmit={async (e) => {
             e.preventDefault()
-            const recaptchaValue = recaptchaRef.current.getValue();
-            if (!recaptchaValue) return toast.error("Verify recaptcha")
-            setLoading(true)
 
             if (!captchaVerified) {
-                verifyRecaptcha.mutateAsync(recaptchaValue)
+                const recaptchaValue = await recaptchaRef.current.executeAsync();
+                if (!recaptchaValue) return toast.error("Verify recaptcha")
+
+                setLoading(true)
+                await verifyRecaptcha.mutateAsync(recaptchaValue)
                     .then(_ => {
                         setCaptchaVerified(true)
                         logiNUser(e)
@@ -33,7 +34,7 @@ const LoginForm = () => {
                         setLoading(false)
                     })
             } else {
-                logiNUser(e)
+                await logiNUser(e)
             }
         }} >
             <Card>
@@ -65,7 +66,7 @@ const LoginForm = () => {
                         </div>
                     </div>
                     <div className='w-full justify-center flex items-center pt-4'>
-                        <ReCAPTCHA ref={recaptchaRef} sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT as string} />
+                        <ReCAPTCHA size='invisible' ref={recaptchaRef} sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT as string} />
                     </div>
                 </CardContent>
                 <CardFooter>
