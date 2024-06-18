@@ -7,9 +7,12 @@ export const POST = async (req: NextRequest) => {
 
         const { username, password } = await req.json()
 
-        const user = await db.users.findUnique({
+        const user = await db.users.findFirst({
             where: {
-                username
+                OR: [
+                    { username: username },
+                    { email: username }
+                ]
             }
         })
         if (!user) return NextResponse.json(null)

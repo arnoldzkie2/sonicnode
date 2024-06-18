@@ -60,7 +60,6 @@ const ScanQr = ({ orderFormData, formBack, setOrderFormData }: ScanQrProps) => {
                     onClientUploadComplete={(data) => {
                         setOrderFormData(prev => ({ ...prev, receipt: data[0].url }))
                         toast.success("Success! receipt uploaded.")
-                        console.log(data)
                     }}
                     onUploadError={(err) => {
                         toast.error("Something went wrong while uploading receipt.")

@@ -21,13 +21,13 @@ const LoginForm = () => {
                 </CardHeader>
                 <CardContent className="space-y-2">
                     <div className="space-y-1">
-                        <Label htmlFor="name">Username</Label>
+                        <Label htmlFor="name">Username or Email</Label>
                         <Input
                             id="name"
                             required
                             value={formData.username}
                             onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                            placeholder='Username' />
+                            placeholder='Username or email' />
                     </div>
                     <div className="space-y-1">
                         <Label htmlFor="password">Password</Label>

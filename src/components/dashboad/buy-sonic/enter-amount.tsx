@@ -49,10 +49,7 @@ const EnterAmount = ({ orderFormData, setOrderFormData, handleFormData, closeOrd
                 <small className='text-muted-foreground'>Other currencies are available as well.</small>
             </div>
             <div className='space-y-4'>
-                <div className='space-y-2'>
-                    <Label>Price</Label>
-                    <Input type='number' value={orderFormData.price} onChange={handleFormData} name='price' placeholder='$1 = 100 Sonic' />
-                </div>
+
                 <div className='flex items-center gap-5 w-full'>
                     <div className='space-y-2 w-full'>
                         <Label>Payment Method</Label>
@@ -84,6 +81,10 @@ const EnterAmount = ({ orderFormData, setOrderFormData, handleFormData, closeOrd
                             </SelectContent>
                         </Select>
                     </div>
+                </div>
+                <div className='space-y-2'>
+                    <Label>Price</Label>
+                    <Input type='number' value={orderFormData.price} onChange={handleFormData} name='price' placeholder='$1 = 100 Sonic' />
                 </div>
                 <div className='pt-5 border-t flex w-full items-center gap-5'>
                     <Button onClick={closeOrder} variant={'ghost'} className='w-full'>Close</Button>

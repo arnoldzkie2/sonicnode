@@ -59,14 +59,13 @@ const useAuthStore = create<AuthProps>((set, get) => ({
         e.preventDefault()
         try {
 
-            const { setLoading, formData } = get()
+            const { setLoading, formData, setFormData } = get()
 
             setLoading(true)
             const result = await signIn('credentials', {
                 username: formData.username,
                 password: formData.password,
-                redirect: true,
-                callbackUrl: '/dashboard'
+                redirect: false
             })
             setLoading(false)
             if (result?.error) {
@@ -74,6 +73,7 @@ const useAuthStore = create<AuthProps>((set, get) => ({
                     position: 'bottom-center'
                 })
             } else {
+                setFormData({ username: '', password: '' })
                 toast.success('Login Successfully!', {
                     position: 'bottom-center'
                 })

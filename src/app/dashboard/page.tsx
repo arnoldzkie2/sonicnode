@@ -11,7 +11,6 @@ const Dashboard = async () => {
     cookies()
     const session = await getAuth()
     if(!session) redirect('/auth')
-    if(!session.user.id) redirect('/auth')
     const dashboardData = await caller.dashboard.getDashboardData()
 
     return (

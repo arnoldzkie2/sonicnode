@@ -84,159 +84,154 @@ export const serverRoute = {
 
                     if (availableNode.length > 0) {
 
-                        try {
-                            //get the first selected node
-                            const selectedNode = availableNode[0]
+                        //get the first selected node
+                        const selectedNode = availableNode[0]
 
-                            //get all the node allocations
-                            const { data } = await sonicApi.get(`/nodes/${selectedNode.id}/allocations`)
+                        //get all the node allocations
+                        const { data } = await sonicApi.get(`/nodes/${selectedNode.id}/allocations`)
 
-                            if (data.data.length > 0) {
+                        if (data.data.length > 0) {
 
-                                //get 1 unassigned allocation
-                                const unassignedAllocation = data.data.find((allocation: any) => !allocation.attributes.assigned);
+                            //get 1 unassigned allocation
+                            const unassignedAllocation = data.data.find((allocation: any) => !allocation.attributes.assigned);
 
-                                if (unassignedAllocation) {
+                            if (unassignedAllocation) {
 
-                                    const checkEgg = await db.eggs.findUnique({
-                                        where: { id: opts.input.egg }, include: {
-                                            egg_variables: true
-                                        }
-                                    })
-                                    if (!checkEgg) throw new TRPCError({
-                                        code: "BAD_REQUEST",
-                                        message: "Server type does not exist"
-                                    })
-                                    const dockerImages = JSON.parse(checkEgg.docker_images as string)
-
-                                    //this is the variables we'll use to create the server
-                                    const eggEnvironment = checkEgg.egg_variables.reduce((acc: any, variable) => {
-                                        acc[variable.env_variable] = variable.default_value;
-                                        return acc;
-                                    }, {})
-
-                                    // Get the current date
-                                    const currentDate = new Date();
-
-                                    // Function to add 30 days to the current date
-                                    const getNextBillingDate = (date: Date) => {
-                                        let nextBillingDate = new Date(date);
-                                        nextBillingDate.setDate(nextBillingDate.getDate() + 30);
-                                        return nextBillingDate;
+                                const checkEgg = await db.eggs.findUnique({
+                                    where: { id: opts.input.egg }, include: {
+                                        egg_variables: true
                                     }
-                                    const nextBillingDate = getNextBillingDate(currentDate);
+                                })
+                                if (!checkEgg) throw new TRPCError({
+                                    code: "BAD_REQUEST",
+                                    message: "Server type does not exist"
+                                })
+                                const dockerImages = JSON.parse(checkEgg.docker_images as string)
 
-                                    const serverDescription = nextBillingDate.toJSON()
-                                    const selectedImage = Object.values(dockerImages)[0] as string
-                                    const defaultPortID = unassignedAllocation.attributes.id
-                                    const resources = {
-                                        memory: selectedPlan.ram,
-                                        cpu: selectedPlan.cpu,
-                                        swap: -1,
-                                        disk: selectedPlan.disk * 1000,
-                                        io: 500
-                                    }
-                                    const featureLimits = {
-                                        databases: 1,
-                                        allocations: 5,
-                                        backups: 2
-                                    }
+                                //this is the variables we'll use to create the server
+                                const eggEnvironment = checkEgg.egg_variables.reduce((acc: any, variable) => {
+                                    acc[variable.env_variable] = variable.default_value;
+                                    return acc;
+                                }, {})
 
-                                    try {
+                                // Get the current date
+                                const currentDate = new Date();
 
-                                        //make an api call to create the server 
-                                        const { data } = await sonicApi.post('/servers', {
-                                            name: opts.input.name,
-                                            user: user.id,
-                                            description: serverDescription,
-                                            nest: checkEgg.nest_id,
-                                            egg: checkEgg.id,
-                                            docker_image: selectedImage,
-                                            startup: checkEgg.startup,
-                                            environment: {
-                                                ...eggEnvironment,
-                                                STARTUP: checkEgg.startup
-                                            },
-                                            limits: resources,
-                                            feature_limits: featureLimits,
-                                            allocation: {
-                                                default: defaultPortID
-                                            }
-                                        })
+                                // Function to add 30 days to the current date
+                                const getNextBillingDate = (date: Date) => {
+                                    let nextBillingDate = new Date(date);
+                                    nextBillingDate.setDate(nextBillingDate.getDate() + 30);
+                                    return nextBillingDate;
+                                }
+                                const nextBillingDate = getNextBillingDate(currentDate);
 
-                                        //if the server successfully created update the usercredits,server renewal cost, node points
-                                        if (data) {
-
-                                            //get the node points details
-                                            const nodePoints: NodeDescription = JSON.parse(selectedNode.description as string)
-                                            const { remainingPoints, totalPoints, maxPoints } = nodePoints
-
-                                            const newNodePoints = JSON.stringify({
-                                                maxPoints,
-                                                totalPoints: totalPoints + selectedPlan.points,
-                                                remainingPoints: remainingPoints - selectedPlan.points
-                                            })
-
-                                            //update user credits
-                                            const [updateUserCredit, updateServerRenewal, updateNodePoints] = await Promise.all([
-                                                db.users.update({
-                                                    where: { id: user.id },
-                                                    data: { store_balance: user.store_balance - selectedPlan.price }
-                                                }),
-                                                db.servers.update({
-                                                    where: { id: data.attributes.id as number },
-                                                    data: { renewal: selectedPlan.price }
-                                                }),
-                                                db.nodes.update({
-                                                    where: { id: selectedNode.id },
-                                                    data: { description: newNodePoints }
-                                                })
-                                            ])
-
-                                            if (!updateUserCredit) throw new TRPCError({
-                                                code: "BAD_REQUEST",
-                                                message: "Failed to update user credit"
-                                            })
-                                            if (!updateServerRenewal) throw new TRPCError({
-                                                code: "BAD_REQUEST",
-                                                message: "Failed to deduct user credit"
-                                            })
-                                            if (!updateNodePoints) throw new TRPCError({
-                                                code: "BAD_REQUEST",
-                                                message: " Faild to update node new points"
-                                            })
-
-                                            return true
-                                        }
-
-                                    } catch (error) {
-                                        console.log(error)
-                                        throw new TRPCError({
-                                            code: "BAD_REQUEST",
-                                            message: "Something went wrong while creating the server"
-                                        })
-                                    }
-
-                                } else {
-
-                                    //throw an error of node doesn't have available ports
-                                    throw new TRPCError({
-                                        code: "BAD_REQUEST",
-                                        message: "Node doesn't have available ports"
-                                    })
+                                const serverDescription = nextBillingDate.toJSON()
+                                const selectedImage = Object.values(dockerImages)[0] as string
+                                const defaultPortID = unassignedAllocation.attributes.id
+                                const resources = {
+                                    memory: selectedPlan.ram,
+                                    cpu: selectedPlan.cpu,
+                                    swap: -1,
+                                    disk: selectedPlan.disk * 1000,
+                                    io: 500
+                                }
+                                const featureLimits = {
+                                    databases: 1,
+                                    allocations: 5,
+                                    backups: 2
                                 }
 
+                                //make an api call to create the server 
+                                const { data } = await sonicApi.post('/servers', {
+                                    name: opts.input.name,
+                                    user: user.id,
+                                    description: serverDescription,
+                                    nest: checkEgg.nest_id,
+                                    egg: checkEgg.id,
+                                    docker_image: selectedImage,
+                                    startup: checkEgg.startup,
+                                    environment: {
+                                        ...eggEnvironment,
+                                        STARTUP: checkEgg.startup
+                                    },
+                                    limits: resources,
+                                    feature_limits: featureLimits,
+                                    allocation: {
+                                        default: defaultPortID
+                                    }
+                                })
+
+                                //if the server successfully created update the usercredits,server renewal cost, node points
+                                if (data) {
+
+                                    //get the node points details
+                                    const nodePoints: NodeDescription = JSON.parse(selectedNode.description as string)
+                                    const { remainingPoints, totalPoints, maxPoints } = nodePoints
+
+                                    const newNodePoints = JSON.stringify({
+                                        maxPoints,
+                                        totalPoints: totalPoints + selectedPlan.points,
+                                        remainingPoints: remainingPoints - selectedPlan.points
+                                    })
+
+                                    //update user credits
+                                    const [updateUserCredit, updateServerRenewal, updateNodePoints] = await Promise.all([
+                                        db.users.update({
+                                            where: { id: user.id },
+                                            data: { store_balance: user.store_balance - selectedPlan.price }
+                                        }),
+                                        db.servers.update({
+                                            where: { id: data.attributes.id as number },
+                                            data: { renewal: selectedPlan.price }
+                                        }),
+                                        db.nodes.update({
+                                            where: { id: selectedNode.id },
+                                            data: { description: newNodePoints }
+                                        })
+                                    ])
+
+                                    if (!updateUserCredit) throw new TRPCError({
+                                        code: "BAD_REQUEST",
+                                        message: "Failed to update user credit"
+                                    })
+                                    if (!updateServerRenewal) throw new TRPCError({
+                                        code: "BAD_REQUEST",
+                                        message: "Failed to deduct user credit"
+                                    })
+                                    if (!updateNodePoints) throw new TRPCError({
+                                        code: "BAD_REQUEST",
+                                        message: " Failed to update node new points"
+                                    })
+
+                                    return true
+
+                                } else {
+                                    throw new TRPCError({
+                                        code: "BAD_REQUEST",
+                                        message: "Something went wrong when creating a server"
+                                    })
+
+                                }
+
+
+                            } else {
+
+                                //throw an error of node doesn't have available ports
+                                throw new TRPCError({
+                                    code: "BAD_REQUEST",
+                                    message: "Node doesn't have available ports please contact our support team."
+                                })
                             }
 
+                        } else {
 
-                        } catch (error) {
-                            //throw an error if it failed to get the allocations
-                            console.log(error);
+                            //throw an error of node doesn't have available ports
                             throw new TRPCError({
                                 code: "BAD_REQUEST",
-                                message: "Failed to get node allocations"
+                                message: "Node doesn't have available ports please contact our support team."
                             })
                         }
+
 
                     } else {
 

@@ -7,11 +7,20 @@ import LoginForm from "@/components/auth/login";
 import SignupForm from "@/components/auth/signup";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const Page = () => {
 
+    const router = useRouter()
+    const session = useSession()
     const authPage = useAuthStore(s => s.authPage)
     const setAuthPage = useAuthStore(s => s.setAuthPage)
+
+    useEffect(() => {
+        if (session.status === 'authenticated') router.push('/dashboard')
+    }, [session])
 
     return (
         <div className='flex flex-col w-screen h-screen justify-center items-center px-5 sm:px-10'>
