@@ -4,6 +4,7 @@ import { getAuth } from "@/lib/nextauth";
 import { TRPCError } from "@trpc/server";
 import db from "@/lib/db";
 import { ORDERSTATUS } from "@/constant/status";
+import { apiLimiter } from "@/lib/api";
 
 export const orderRoute = {
     createOrder: publicProcedure.input(z.object({
@@ -14,6 +15,8 @@ export const orderRoute = {
     })).mutation(async (opts) => {
 
         try {
+
+            await apiLimiter.consume(1)
 
             const { price, method, currency, receipt } = opts.input
 
@@ -53,7 +56,7 @@ export const orderRoute = {
             const invalidOrdersCount = user.orders.filter(order => order.status === ORDERSTATUS['invalid']).length;
             if (invalidOrdersCount >= 5) {
                 //delete the image in uploadthing
-                
+
 
                 //throw an error
                 throw new TRPCError({

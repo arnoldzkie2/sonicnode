@@ -7,7 +7,8 @@ import { FEATURES } from '@/constant/features'
 import Link from 'next/link'
 import MainPlan from './main-plan'
 
-const Main = () => {
+const Main =  () => {
+
     return (
         <div className='flex flex-col items-center gap-10 pt-32 w-full md:h-screen'>
             <div className='flex flex-col gap-7 text-center items-center sm:w-[70%] md:w-3/4 lg:w-2/3'>

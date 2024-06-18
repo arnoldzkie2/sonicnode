@@ -1,17 +1,41 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card'
 import { Label } from '../ui/label'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
 import useAuthStore from '@/stores/authStore'
 import { LoaderCircle } from 'lucide-react'
+import ReCAPTCHA from "react-google-recaptcha";
+import { trpc } from '@/app/_trpc/client'
+import { toast } from 'sonner'
 
 const LoginForm = () => {
 
-    const { formData, setFormData, logiNUser, loading } = useAuthStore()
+    const { formData, setFormData, logiNUser, loading, setLoading } = useAuthStore()
+    const verifyRecaptcha = trpc.user.verifyRecaptcha.useMutation()
+    const recaptchaRef: any = React.createRef();
+    const [captchaVerified, setCaptchaVerified] = useState(false)
 
     return (
-        <form onSubmit={(e) => logiNUser(e)} >
+        <form onSubmit={async (e) => {
+            e.preventDefault()
+            const recaptchaValue = recaptchaRef.current.getValue();
+            if (!recaptchaValue) return toast.error("Verify recaptcha")
+            setLoading(true)
+
+            if (!captchaVerified) {
+                verifyRecaptcha.mutateAsync(recaptchaValue)
+                    .then(_ => {
+                        setCaptchaVerified(true)
+                        logiNUser(e)
+                    }).catch(err => {
+                        toast.error(err.message)
+                        setLoading(false)
+                    })
+            } else {
+                logiNUser(e)
+            }
+        }} >
             <Card>
                 <CardHeader>
                     <CardTitle>Sign In</CardTitle>
@@ -39,6 +63,9 @@ const LoginForm = () => {
                                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                 placeholder='Enter password' />
                         </div>
+                    </div>
+                    <div className='w-full justify-center flex items-center pt-4'>
+                        <ReCAPTCHA ref={recaptchaRef} sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT as string} />
                     </div>
                 </CardContent>
                 <CardFooter>

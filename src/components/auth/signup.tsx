@@ -8,11 +8,16 @@ import useAuthStore from '@/stores/authStore'
 import { Eye, EyeOff, LoaderCircle } from 'lucide-react'
 import { trpc } from '@/app/_trpc/client'
 import { toast } from 'sonner'
+import ReCAPTCHA from "react-google-recaptcha";
 
 const SignupForm = () => {
 
     const { formDataSignUp, setFormDataSignUp, setAuthPage } = useAuthStore()
     const [eye, setEye] = useState(false)
+    const recaptchaRef: any = React.createRef();
+    const [captchaVerified, setCaptchaVerified] = useState(false)
+    const verifyRecaptcha = trpc.user.verifyRecaptcha.useMutation()
+
     const { isPending, mutateAsync } = trpc.user.registerUser.useMutation({
         onError: (err) => {
             toast.error(err.message)
@@ -28,7 +33,20 @@ const SignupForm = () => {
     return (
         <form onSubmit={(e) => {
             e.preventDefault()
-            mutateAsync(formDataSignUp)
+            const recaptchaValue = recaptchaRef.current.getValue();
+            if (!recaptchaValue) return toast.error("Verify recaptcha")
+
+            if (!captchaVerified) {
+                verifyRecaptcha.mutateAsync(recaptchaValue)
+                    .then(_ => {
+                        setCaptchaVerified(true)
+                        mutateAsync(formDataSignUp)
+                    }).catch(err => {
+                        toast.error(err.message)
+                    })
+            } else {
+                mutateAsync(formDataSignUp)
+            }
         }}>
             <Card>
                 <CardHeader>
@@ -88,9 +106,12 @@ const SignupForm = () => {
                             }
                         </div>}
                     </div>
+                    <div className='w-full justify-center flex items-center pt-4'>
+                        <ReCAPTCHA ref={recaptchaRef} sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT as string} />
+                    </div>
                 </CardContent>
                 <CardFooter>
-                    <Button className='w-full'>{isPending ? <LoaderCircle className='animate-spin' size={18} /> : 'Sign Up'}</Button>
+                    <Button className='w-full'>{isPending || verifyRecaptcha.isPending ? <LoaderCircle className='animate-spin' size={18} /> : 'Sign Up'}</Button>
                 </CardFooter>
             </Card>
         </form >

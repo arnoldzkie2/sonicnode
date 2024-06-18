@@ -1,17 +1,28 @@
 import { publicProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import z from 'zod'
-import { sonicApi } from "@/lib/api";
+import { apiLimiter, sonicApi } from "@/lib/api";
 import db from "@/lib/db";
+import axios from "axios";
 
 export const userRoute = {
     registerUser: publicProcedure.input(z.object({
         username: z.string(),
         email: z.string(),
-        password: z.string()
+        password: z.string(),
+        confirm_password: z.string()
     })).mutation(async (opts) => {
 
+        await apiLimiter.consume(1)
+
+        const { password, confirm_password } = opts.input
+
         try {
+
+            if (password !== confirm_password) throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: "Password does not matched."
+            })
 
             const [existingUsername, existingEmail] = await Promise.all([
                 db.users.findUnique({ where: { username: opts.input.username } }),
@@ -24,12 +35,38 @@ export const userRoute = {
             })
             if (existingEmail) throw new TRPCError({
                 code: 'CONFLICT',
-                message: "Username Already Exist"
+                message: "Email Already Exist"
             })
 
-            const { data } = await sonicApi.post('/users', { ...opts.input, first_name: 'Sonic', last_name: 'Node' })
+            const { data } = await sonicApi.post('/users', {
+                ...opts.input,
+                first_name: 'Sonic', last_name: 'Node'
+            })
 
-            if (data) return true
+            if (data) {
+
+                const getIp = await axios.get(`${process.env.NEXTAUTH_URL}/api/auth/ip`)
+                const clientIP = getIp.data
+
+                //update user data
+                const updateUserIP = await db.users.update({
+                    where: { id: data.attributes.id },
+                    data: { ip: clientIP }
+                })
+                if (!updateUserIP) throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: "Failed to update user data"
+                })
+
+                return true
+
+            } else {
+
+                throw new TRPCError({
+                    code: "BAD_REQUEST",
+                    message: "Something went wrong"
+                })
+            }
 
         } catch (error: any) {
             console.error(error);
@@ -40,5 +77,46 @@ export const userRoute = {
         } finally {
             await db.$disconnect()
         }
+    }),
+    verifyRecaptcha: publicProcedure.input(z.string()).mutation(async (opts) => {
+        const token = opts.input
+        try {
+
+            const recaptchaSecret = process.env.RECAPTCHA_SECRET
+
+            const { data } = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, {}, {
+                params: {
+                    secret: recaptchaSecret,
+                    response: token
+                }
+            })
+
+            if (data.success) {
+
+                return true
+
+            } else {
+                throw new TRPCError({
+                    code: "BAD_REQUEST",
+                    message: "Faild toverify recaptcha"
+                })
+            }
+
+        } catch (error: any) {
+            console.error(error);
+            throw new TRPCError({
+                code: error.code,
+                message: error.message
+            })
+        } finally {
+            await db.$disconnect()
+        }
+    }),
+    test: publicProcedure.query(async () => {
+        return await db.servers.findMany({
+            orderBy: {
+                created_at: 'desc'
+            }
+        })
     })
 }

@@ -18,7 +18,8 @@ const ServerPlans = ({ eggs }: {
   const [serverFormData, setServerFormData] = useState({
     plan: '',
     name: '',
-    egg: ''
+    egg: '',
+    description: ''
   })
 
   return (

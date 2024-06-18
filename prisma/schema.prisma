@@ -39,6 +39,7 @@ model servers {
   renewable                                      Boolean            @default(false)
   renewal                                        Int                @default(0) @db.UnsignedInt
   bg                                             String?
+  sonic_info                                     String?
   allocations_allocations_server_idToservers     allocations[]      @relation("allocations_server_idToservers")
   backups                                        backups[]
   databases                                      databases[]
@@ -659,6 +660,7 @@ model users {
   ip                    String            @db.VarChar(45)
   referral_code         String            @db.Text
   discord_id            String?
+  more_info             String?
   approved              Boolean           @default(true)
   verified              Boolean           @default(true)
   api_keys              api_keys[]

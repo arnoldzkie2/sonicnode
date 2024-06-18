@@ -4,7 +4,7 @@ import { TRPCError } from "@trpc/server"
 import { getAuth } from "@/lib/nextauth"
 import db from "@/lib/db"
 import { PLANS } from "@/constant/plans"
-import { sonicApi } from "@/lib/api";
+import { apiLimiter, sonicApi } from "@/lib/api";
 
 interface NodeDescription {
     maxPoints: number
@@ -12,16 +12,27 @@ interface NodeDescription {
     remainingPoints: number
 }
 
+interface SonicInfo {
+    next_billing: string;
+    renewal: number;
+    status: number;
+    node_points: number;
+    deletion_countdown: number;
+}
+
 export const serverRoute = {
     createServer: publicProcedure.input(z.object({
         plan: z.string(),
         name: z.string(),
+        description: z.string().optional(),
         egg: z.number()
     })).mutation(async (opts) => {
 
         try {
 
-            const { plan, name, egg } = opts.input
+            await apiLimiter.consume(1)
+
+            const { plan, name, egg, description } = opts.input
 
             if (!name) throw new TRPCError({
                 code: "NOT_FOUND",
@@ -114,18 +125,6 @@ export const serverRoute = {
                                     return acc;
                                 }, {})
 
-                                // Get the current date
-                                const currentDate = new Date();
-
-                                // Function to add 30 days to the current date
-                                const getNextBillingDate = (date: Date) => {
-                                    let nextBillingDate = new Date(date);
-                                    nextBillingDate.setDate(nextBillingDate.getDate() + 30);
-                                    return nextBillingDate;
-                                }
-                                const nextBillingDate = getNextBillingDate(currentDate);
-
-                                const serverDescription = nextBillingDate.toJSON()
                                 const selectedImage = Object.values(dockerImages)[0] as string
                                 const defaultPortID = unassignedAllocation.attributes.id
                                 const resources = {
@@ -145,7 +144,7 @@ export const serverRoute = {
                                 const { data } = await sonicApi.post('/servers', {
                                     name: opts.input.name,
                                     user: user.id,
-                                    description: serverDescription,
+                                    description,
                                     nest: checkEgg.nest_id,
                                     egg: checkEgg.id,
                                     docker_image: selectedImage,
@@ -164,6 +163,26 @@ export const serverRoute = {
                                 //if the server successfully created update the usercredits,server renewal cost, node points
                                 if (data) {
 
+                                    // Get the current date
+                                    const currentDate = new Date();
+
+                                    // Function to add 30 days to the current date
+                                    const getNextBillingDate = (date: Date) => {
+                                        let nextBillingDate = new Date(date);
+                                        nextBillingDate.setDate(nextBillingDate.getDate() + 30);
+                                        return nextBillingDate;
+                                    }
+                                    const nextBillingDate = getNextBillingDate(currentDate);
+
+                                    //put this in sonic_info so we can parse it later and get additional information
+                                    const sonicInfo: SonicInfo = {
+                                        next_billing: nextBillingDate.toJSON(),
+                                        renewal: selectedPlan.price,
+                                        status: 1,
+                                        node_points: selectedPlan.points,
+                                        deletion_countdown: 35
+                                    }
+
                                     //get the node points details
                                     const nodePoints: NodeDescription = JSON.parse(selectedNode.description as string)
                                     const { remainingPoints, totalPoints, maxPoints } = nodePoints
@@ -175,14 +194,16 @@ export const serverRoute = {
                                     })
 
                                     //update user credits
-                                    const [updateUserCredit, updateServerRenewal, updateNodePoints] = await Promise.all([
+                                    const [updateUserCredit, updateServerInfo, updateNodePoints] = await Promise.all([
                                         db.users.update({
                                             where: { id: user.id },
                                             data: { store_balance: user.store_balance - selectedPlan.price }
                                         }),
                                         db.servers.update({
                                             where: { id: data.attributes.id as number },
-                                            data: { renewal: selectedPlan.price }
+                                            data: {
+                                                sonic_info: JSON.stringify(sonicInfo)
+                                            }
                                         }),
                                         db.nodes.update({
                                             where: { id: selectedNode.id },
@@ -194,7 +215,7 @@ export const serverRoute = {
                                         code: "BAD_REQUEST",
                                         message: "Failed to update user credit"
                                     })
-                                    if (!updateServerRenewal) throw new TRPCError({
+                                    if (!updateServerInfo) throw new TRPCError({
                                         code: "BAD_REQUEST",
                                         message: "Failed to deduct user credit"
                                     })
@@ -268,5 +289,152 @@ export const serverRoute = {
         } finally {
             await db.$disconnect()
         }
+    }),
+    checkBilling: publicProcedure.input(z.string()).query(async (opts) => {
+
+        await apiLimiter.consume(1)
+
+        const key = opts.input
+        if (key !== process.env.API_KEY) throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: "Fck you!"
+        })
+
+        const servers = await db.servers.findMany({
+            where: {
+                sonic_info: {
+                    not: null
+                }
+            },
+            select: {
+                id: true,
+                node_id: true,
+                sonic_info: true,
+                users: {
+                    select: {
+                        id: true,
+                        store_balance: true
+                    }
+                }
+            }
+        })
+        if (!servers) throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Failed to get all servers"
+        })
+
+        // Get today's date and yesterday's date
+        const today = new Date();
+        const yesterday = new Date();
+        yesterday.setDate(today.getDate() - 1);
+
+        // Helper function to check if a date is today or yesterday
+        const isTodayOrYesterday = (date: Date) => {
+            const d = new Date(date);
+            return (
+                (d.toDateString() === today.toDateString()) ||
+                (d.toDateString() === yesterday.toDateString())
+            );
+        };
+
+        //filter the servers if the next_billing is today
+        const serversToUpdate = servers
+            .map(server => ({
+                ...server,
+                info: JSON.parse(server.sonic_info || '') as SonicInfo,
+                sonic_info: undefined
+            }))
+            .filter(server => isTodayOrYesterday(new Date(server.info.next_billing)))
+
+        // Prepare batch updates
+        const updatePromises = serversToUpdate.map(async server => {
+
+            const nextBillingDate = new Date(server.info.next_billing);
+            const renewalAmount = server.info.renewal;
+            const userBalance = server.users.store_balance;
+
+            if (userBalance >= renewalAmount) {
+                // Deduct the renewal amount from the user's balance
+
+                // Update the server's next_billing date
+                const updatedBillingDate = new Date(nextBillingDate);
+                updatedBillingDate.setDate(updatedBillingDate.getDate() + 30)
+
+                const newInfo: SonicInfo = {
+                    ...server.info,
+                    status: 1,
+                    deletion_countdown: 5,
+                    next_billing: updatedBillingDate.toJSON()
+                }
+
+                // user has successfully renew the server
+                await Promise.all([
+                    db.users.update({
+                        where: { id: server.users.id },
+                        data: { store_balance: userBalance - renewalAmount },
+                    }),
+                    db.servers.update({
+                        where: { id: server.id },
+                        data: { sonic_info: JSON.stringify(newInfo) },
+                    }),
+                    sonicApi.post(`/servers/${server.id}/unsuspend`)
+                ])
+
+            } else {
+
+                if (server.info.deletion_countdown) {
+                    //if server deletion is not 0 reduce it to 1 day
+
+                    const newInfo: SonicInfo = {
+                        ...server.info,
+                        deletion_countdown: server.info.deletion_countdown - 1,
+                        status: 0
+                    }
+
+                    // user has failed renew the server and their server is suspended and deletion date get's reduce day by day
+                    await Promise.all([
+                        //update sonic info
+                        db.servers.update({
+                            where: { id: server.id },
+                            data: { sonic_info: JSON.stringify(newInfo) }
+                        }),
+                        //suspend the server
+                        sonicApi.post(`/servers/${server.id}/suspend`)
+                    ])
+
+                } else {
+                    //server will be deleted after 5 days of countdown
+                    //delete the server and update the node totalPoints
+
+                    const node = await db.nodes.findUnique({ where: { id: server.node_id } })
+                    if (!node) throw new TRPCError({
+                        code: "NOT_FOUND",
+                        message: "Node not found"
+                    })
+
+                    const nodePoints: NodeDescription = JSON.parse(node.description || '')
+
+                    const newNodePoints: NodeDescription = {
+                        maxPoints: nodePoints.maxPoints,
+                        totalPoints: nodePoints.totalPoints - server.info.node_points,
+                        remainingPoints: nodePoints.remainingPoints + server.info.node_points
+                    }
+
+                    // user has failed renew the server and is being deleted
+                    //update node points and delelete the server
+                    await Promise.all([
+                        db.nodes.update({
+                            where: { id: server.node_id },
+                            data: { description: JSON.stringify(newNodePoints) }
+                        }),
+                        db.servers.delete({ where: { id: server.id } })
+                    ])
+                }
+            }
+        });
+
+        await Promise.all(updatePromises);
+
+        return true
     })
 }

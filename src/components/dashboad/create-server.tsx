@@ -19,10 +19,12 @@ const CreateServer = ({ eggs, setServerFormData, serverFormData, plan }: {
     setServerFormData: React.Dispatch<React.SetStateAction<{
         plan: string;
         name: string;
+        description: string
         egg: string;
     }>>
     serverFormData: {
         plan: string;
+        description: string
         name: string;
         egg: string;
     }
@@ -68,11 +70,6 @@ const CreateServer = ({ eggs, setServerFormData, serverFormData, plan }: {
                     await createServer.mutateAsync(data)
                 }}>
                     <div className='flex flex-col space-y-2'>
-                        <Label>Server Name</Label>
-                        <Input required value={serverFormData.name} onChange={(e) => setServerFormData(prev => ({ ...prev, name: e.target.value }))} />
-                    </div>
-
-                    <div className='flex flex-col space-y-2'>
                         <Label>Server Type</Label>
                         <Select value={serverFormData.egg} onValueChange={(val) => setServerFormData(prev => ({ ...prev, egg: val }))}>
                             <SelectTrigger className="w-full">
@@ -87,6 +84,15 @@ const CreateServer = ({ eggs, setServerFormData, serverFormData, plan }: {
                             </SelectContent>
                         </Select>
                     </div>
+                    <div className='flex flex-col space-y-2'>
+                        <Label>Server Name</Label>
+                        <Input required value={serverFormData.name} onChange={(e) => setServerFormData(prev => ({ ...prev, name: e.target.value }))} />
+                    </div>
+                    <div className='flex flex-col space-y-2'>
+                        <Label>Server Description (optional)</Label>
+                        <Input value={serverFormData.description} onChange={(e) => setServerFormData(prev => ({ ...prev, description: e.target.value }))} />
+                    </div>
+
                     <div className='flex items-center gap-5 w-full pt-4'>
                         <Button onClick={() => setOpen(false)} variant={'ghost'} type='button' className='w-full'>Close</Button>
                         <Button disabled={createServer.isPending} className='w-full'>{
