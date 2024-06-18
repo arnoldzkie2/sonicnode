@@ -75,7 +75,7 @@ const UserServers = ({ initialData }: Props) => {
                                     </div>
                                     <div className='flex w-full items-center justify-between'>
                                         <small className='text-muted-foreground'>Next Billing: {new Date(sonicInfo.next_billing || '').toLocaleDateString()}</small>
-                                        <Button variant={sonicInfo.status ? "default" : "destructive"} className='h-8 cursor-default w-24'>
+                                        <Button variant={sonicInfo.status ? 'secondary' : "destructive"} className='h-8 cursor-default w-24'>
                                             {sonicInfo.status ? "Active" : "Suspended"}
                                         </Button>
                                     </div>

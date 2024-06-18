@@ -680,7 +680,7 @@ model users_orders {
   method     String
   currency   String
   receipt    String
-  user       users    @relation(fields: [user_id], references: [id])
+  user       users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id    Int      @db.UnsignedInt
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

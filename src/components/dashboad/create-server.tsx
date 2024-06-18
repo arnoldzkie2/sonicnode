@@ -69,7 +69,7 @@ const CreateServer = ({ eggs, setServerFormData, serverFormData, plan }: {
                     const data = { ...serverFormData, egg: Number(serverFormData.egg) }
                     await createServer.mutateAsync(data)
                 }}>
-                    <div className='flex flex-col space-y-2'>
+                    <div className='flex flex-col space-y-3'>
                         <Label>Server Type</Label>
                         <Select value={serverFormData.egg} onValueChange={(val) => setServerFormData(prev => ({ ...prev, egg: val }))}>
                             <SelectTrigger className="w-full">

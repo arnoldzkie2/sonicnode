@@ -51,7 +51,7 @@ export const userRoute = {
                 //update user data
                 const updateUserIP = await db.users.update({
                     where: { id: data.attributes.id },
-                    data: { ip: clientIP }
+                    data: { ip: clientIP, approved: true }
                 })
                 if (!updateUserIP) throw new TRPCError({
                     code: 'BAD_REQUEST',
@@ -113,10 +113,6 @@ export const userRoute = {
         }
     }),
     test: publicProcedure.query(async () => {
-        return await db.servers.findMany({
-            orderBy: {
-                created_at: 'desc'
-            }
-        })
+        return await db.users.findUnique({ where: { id: 34 } })
     })
 }

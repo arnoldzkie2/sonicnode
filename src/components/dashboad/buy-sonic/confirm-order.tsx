@@ -36,6 +36,7 @@ const ConfirmOrder = ({ orderFormData, formBack, setOpen, clearForm }: ConfirmOr
                     url: orderFormData.receipt
                 }
             })
+            
             clearForm()
             setOpen(false)
             return toast.error(err.message)

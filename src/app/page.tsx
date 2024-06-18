@@ -6,7 +6,6 @@ import Pterodatyl from '@/components/home/pterodactyl'
 import Trial from '@/components/home/trial'
 import React from 'react'
 
-
 const HomePage = () => {
 
   return (

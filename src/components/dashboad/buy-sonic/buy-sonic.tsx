@@ -5,6 +5,7 @@ import React, { useState } from 'react'
 import EnterAmount from './enter-amount'
 import ScanQr from './scan-qr'
 import ConfirmOrder from './confirm-order'
+import axios from 'axios'
 
 const BuySonic = () => {
 
@@ -25,6 +26,13 @@ const BuySonic = () => {
     }
 
     const clearForm = () => {
+        if (orderFormData.receipt) {
+            axios.delete('/api/uploadthing', {
+                data: {
+                    url: orderFormData.receipt
+                }
+            })
+        }
         setOrderFormData({ amount: '', method: '', price: '', status: 1, receipt: '', currency: 'USD' })
     }
 

@@ -31,7 +31,8 @@ export default function RootLayout({
             defaultTheme="dark"
             enableSystem
           >
-            <body>{children}
+            <body>
+              {children}
               <Toaster />
             </body>
           </ThemeProvider>
