@@ -662,12 +662,26 @@ model users {
   approved              Boolean           @default(true)
   verified              Boolean           @default(true)
   api_keys              api_keys[]
+  orders                users_orders[]
   recovery_tokens       recovery_tokens[]
   servers               servers[]
   subusers              subusers[]
   user_ssh_keys         user_ssh_keys[]
 
   @@index([external_id], map: "users_external_id_index")
+}
+
+model users_orders {
+  id         Int      @id @default(autoincrement()) @db.UnsignedInt
+  status     String
+  price      String
+  method     String
+  currency   String
+  receipt    String
+  user       users    @relation(fields: [user_id], references: [id])
+  user_id    Int      @db.UnsignedInt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model verification_tokens {

@@ -65,7 +65,8 @@ const useAuthStore = create<AuthProps>((set, get) => ({
             const result = await signIn('credentials', {
                 username: formData.username,
                 password: formData.password,
-                redirect: false
+                redirect: true,
+                callbackUrl: '/dashboard'
             })
             setLoading(false)
             if (result?.error) {

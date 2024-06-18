@@ -35,6 +35,7 @@ const DashboardTabs = ({ initialData }: {
                 </TabsContent>
                 <TabsContent value="credits" className='w-full'>
                     <UserCredits
+                        orders={initialData.orders}
                         credits={initialData.credits}
                         totalMonthlyBilling={initialData.totalMonthlyBilling} />
                 </TabsContent>

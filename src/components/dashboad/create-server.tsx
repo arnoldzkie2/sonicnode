@@ -30,7 +30,7 @@ const CreateServer = ({ eggs, setServerFormData, serverFormData, plan }: {
 
     const [open, setOpen] = useState(false)
 
-    const createServer = trpc.dashboard.createServer.useMutation({
+    const createServer = trpc.server.createServer.useMutation({
         onError: (err) => {
             toast.error(err.message, {
                 position: 'bottom-center'

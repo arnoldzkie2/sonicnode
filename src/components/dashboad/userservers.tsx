@@ -29,7 +29,7 @@ const UserServers = ({ initialData }: Props) => {
             </div>
             <div className='flex flex-wrap w-full gap-5'>
                 {
-                    servers.length > 0 && servers.map((server, i) => (
+                    servers.length > 0 ? servers.map((server, i) => (
                         <Card key={i} className='w-full'>
                             <CardHeader>
                                 <CardTitle>{server.name}</CardTitle>
@@ -70,7 +70,9 @@ const UserServers = ({ initialData }: Props) => {
                                 </div>
                             </CardContent>
                         </Card>
-                    ))
+                    )) : <div className='flex flex-col text-center pt-10 items-center w-full gap-5'>
+                        <h1 className='text-xl font-black'>{"Look's like you don't have a server"}</h1>
+                    </div>
                 }
             </div>
         </div>

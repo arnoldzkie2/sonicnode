@@ -5,6 +5,7 @@ import { CircleCheckBig, LogInIcon } from 'lucide-react'
 import { Separator } from '../ui/separator'
 import { FEATURES } from '@/constant/features'
 import Link from 'next/link'
+import MainPlan from './main-plan'
 
 const Main = () => {
     return (
@@ -14,7 +15,7 @@ const Main = () => {
                 <h1 className='text-3xl sm:text-4xl xl:text-5xl 2xl:text-6xl font-[1000]'>Reliable Minecraft Server Hosting in Asia</h1>
                 <h2 className='text-muted-foreground'>Discover reliable Minecraft server hosting with dedicated resources and budget-friendly prices.</h2>
                 <div className='flex items-center gap-5 w-full md:w-auto'>
-                    <Button className='w-full md:w-44'>Explore Our Plans</Button>
+                    <MainPlan />
                     <Link href={'https://panel.sonicnode.xyz'} className='w-full md:w-44' target='_blank'>
                         <Button variant={'outline'} className='w-full'>Panel
                             <LogInIcon size={16} className='ml-2' />

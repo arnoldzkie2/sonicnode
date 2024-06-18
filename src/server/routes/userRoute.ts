@@ -1,4 +1,3 @@
-import { getAuth } from "@/lib/nextauth";
 import { publicProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import z from 'zod'
@@ -6,15 +5,6 @@ import { sonicApi } from "@/lib/api";
 import db from "@/lib/db";
 
 export const userRoute = {
-    getUserData: publicProcedure.query(async () => {
-        const auth = await getAuth()
-
-        if (!auth) throw new TRPCError({
-            code: "UNAUTHORIZED"
-        })
-
-        return auth.user
-    }),
     registerUser: publicProcedure.input(z.object({
         username: z.string(),
         email: z.string(),
@@ -41,12 +31,14 @@ export const userRoute = {
 
             if (data) return true
 
-        } catch (error) {
-            console.log(error);
+        } catch (error: any) {
+            console.error(error);
             throw new TRPCError({
-                code: 'BAD_REQUEST',
-                message: "Something went wron"
+                code: error.code,
+                message: error.message
             })
+        } finally {
+            await db.$disconnect()
         }
     }),
     test: publicProcedure.query(async () => {

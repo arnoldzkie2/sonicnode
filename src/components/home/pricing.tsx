@@ -11,9 +11,9 @@ import Link from 'next/link'
 const Pricing = () => {
     return (
         <div className='flex flex-col py-16' id='plans'>
-            <div className='flex flex-wrap gap-5 justify-center'>
+            <div className='flex flex-wrap gap-8 justify-center'>
                 {PLANS.map((plans, i) => (
-                    <Card key={i} className='w-full max-w-72 cursor-pointer hover:shadow-2xl hover:rounded-2xl hover:shadow-yellow-400 hover:scale-[101%] transition-all'>
+                    <Card key={i} className='w-full max-w-80 cursor-pointer hover:shadow-2xl hover:rounded-2xl hover:shadow-yellow-400 hover:scale-[101%] transition-all'>
                         <CardHeader>
                             <CardTitle className='flex items-center justify-between w-full'>
                                 <div className='flex flex-col gap-1'>
