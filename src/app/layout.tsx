@@ -4,6 +4,7 @@ import TrpcProvider from "./_trpc/TrpcProvider";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import SessionProviders from "@/components/ui/session-provider";
 import { Toaster } from "@/components/ui/sonner"
+import Adsense from "@/components/Adsense";
 
 export const metadata: Metadata = {
   title: "Sonic Node",
@@ -18,6 +19,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <Adsense
+          pubID={process.env.ADSENSE_ID as string}
+        />
+      </head>
       <SessionProviders>
         <TrpcProvider>
           <ThemeProvider
