@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import requestIP from 'request-ip'
 
 export const GET = async (req: NextRequest) => {
 
