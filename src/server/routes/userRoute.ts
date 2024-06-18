@@ -40,12 +40,5 @@ export const userRoute = {
         } finally {
             await db.$disconnect()
         }
-    }),
-    test: publicProcedure.query(async () => {
-
-        const data = JSON.parse("{\"maxPoints\":4,\"totalPoints\":0,\"remainingPoints\":4}")
-        const serverDescription = new Date().toJSON()
-
-        return serverDescription
     })
 }
