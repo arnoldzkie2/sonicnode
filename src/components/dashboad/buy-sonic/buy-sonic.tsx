@@ -29,6 +29,11 @@ const BuySonic = () => {
 
     const clearForm = () => {
         setOrderFormData({ amount: '', method: '', price: '', status: 1, receipt: '', currency: 'USD' })
+    }
+
+    const closeOrder = () => {
+        clearForm()
+        setOpen(false)
         if (orderFormData.receipt) {
             axios.delete('/api/uploadthing', {
                 data: {
@@ -36,11 +41,6 @@ const BuySonic = () => {
                 }
             })
         }
-    }
-
-    const closeOrder = () => {
-        clearForm()
-        setOpen(false)
     }
 
     const formBack = () => {
