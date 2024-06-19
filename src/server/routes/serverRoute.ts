@@ -65,7 +65,7 @@ export const serverRoute = {
             if (selectedPlan) {
 
                 //check if user has enough sonic coin to purchase a server
-                if (user.store_balance < selectedPlan.price) throw new TRPCError({
+                if (user.sonic_coin < selectedPlan.price) throw new TRPCError({
                     code: "BAD_REQUEST",
                     message: "You don't have enough sonic coin to buy this plan"
                 })
@@ -197,7 +197,7 @@ export const serverRoute = {
                                     const [updateUserCredit, updateServerInfo, updateNodePoints] = await Promise.all([
                                         db.users.update({
                                             where: { id: user.id },
-                                            data: { store_balance: user.store_balance - selectedPlan.price }
+                                            data: { sonic_coin: user.sonic_coin - selectedPlan.price }
                                         }),
                                         db.servers.update({
                                             where: { id: data.attributes.id as number },
@@ -307,7 +307,7 @@ export const serverRoute = {
                 users: {
                     select: {
                         id: true,
-                        store_balance: true
+                        sonic_coin: true
                     }
                 }
             }
@@ -344,7 +344,7 @@ export const serverRoute = {
 
             const nextBillingDate = new Date(server.sonic_info.next_billing);
             const renewalAmount = server.sonic_info.renewal;
-            const userBalance = server.users.store_balance;
+            const userBalance = server.users.sonic_coin;
 
             if (userBalance >= renewalAmount) {
                 // Deduct the renewal amount from the user's balance
@@ -363,7 +363,7 @@ export const serverRoute = {
                 await Promise.all([
                     db.users.update({
                         where: { id: server.users.id },
-                        data: { store_balance: userBalance - renewalAmount },
+                        data: { sonic_coin: userBalance - renewalAmount },
                     }),
                     db.servers.update({
                         where: { id: server.id },
@@ -449,7 +449,7 @@ export const serverRoute = {
                     users: {
                         select: {
                             id: true,
-                            store_balance: true
+                            sonic_coin: true
                         }
                     }
                 }
@@ -464,7 +464,7 @@ export const serverRoute = {
             const sonicInfo: SonicInfo = JSON.parse(server.sonic_info || "{}")
 
             //check if user has enough balance to renew the server
-            if (server.users.store_balance >= sonicInfo.renewal) {
+            if (server.users.sonic_coin >= sonicInfo.renewal) {
 
                 const today = new Date()
                 // Create a new Date object and set it to 30 days from today
@@ -482,7 +482,7 @@ export const serverRoute = {
                 const [updateUserCredit, updateServerInfo, unsuspendServer] = await Promise.all([
                     db.users.update({
                         where: { id: server.users.id }, data: {
-                            store_balance: server.users.store_balance - sonicInfo.renewal
+                            sonic_coin: server.users.sonic_coin - sonicInfo.renewal
                         }
                     }),
                     db.servers.update({

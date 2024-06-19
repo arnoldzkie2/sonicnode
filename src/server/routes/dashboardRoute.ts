@@ -60,7 +60,7 @@ export const dashboadRoute = {
             }, 0)
 
             const dashboardData = {
-                credits: user.store_balance,
+                credits: user.sonic_coin,
                 servers: user.servers,
                 orders: user.orders,
                 eggs, totalMonthlyBilling

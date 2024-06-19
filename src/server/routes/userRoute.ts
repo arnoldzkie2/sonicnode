@@ -45,19 +45,6 @@ export const userRoute = {
 
             if (data) {
 
-                const getIp = await axios.get(`${process.env.NEXTAUTH_URL}/api/auth/ip`)
-                const clientIP = getIp.data
-
-                //update user data
-                const updateUserIP = await db.users.update({
-                    where: { id: data.attributes.id },
-                    data: { ip: clientIP, approved: true }
-                })
-                if (!updateUserIP) throw new TRPCError({
-                    code: 'BAD_REQUEST',
-                    message: "Failed to update user data"
-                })
-
                 return true
 
             } else {
@@ -113,6 +100,8 @@ export const userRoute = {
         }
     }),
     test: publicProcedure.query(async () => {
-        return await db.users.findUnique({ where: { id: 34 } })
+
+        const users = await db.nests.findMany()
+        return users
     })
 }

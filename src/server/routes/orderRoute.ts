@@ -199,7 +199,7 @@ export const orderRoute = {
                 db.users.update({
                     where: { id: user.id },
                     data: {
-                        store_balance: user.store_balance + amount
+                        sonic_coin: user.sonic_coin + amount
                     }
                 })
             ])
