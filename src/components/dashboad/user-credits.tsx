@@ -32,7 +32,7 @@ const UserCredits = ({ credits, totalMonthlyBilling, orders }: UserCreditProps) 
                     <small className='text-muted-foreground'>Total 30D Billing</small>
                     <div className='flex items-center gap-3'>
                         <Image src={'/logo.svg'} alt='Sonic Coin' width={23} height={23} />
-                        <div className='text-sm font-[1000] text-muted-foreground'>{totalMonthlyBilling}/30D</div>
+                        <div className='text-sm font-[1000]'>{totalMonthlyBilling}/<span className='font-normal text-muted-foreground text-xs'>30D</span></div>
                     </div>
                 </div>
             </div>

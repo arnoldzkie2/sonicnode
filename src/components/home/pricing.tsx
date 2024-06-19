@@ -1,7 +1,7 @@
 import { PLANS } from '@/constant/plans'
 import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
-import { Cpu, HardDrive, MapPin, ShoppingCart, Users } from 'lucide-react'
+import { Cpu, GitFork, HardDrive, ShoppingCart, Users } from 'lucide-react'
 import { Label } from '../ui/label'
 import ReturnToolTip from '../ui/return-tooltip'
 import { Button } from '../ui/button'
@@ -55,10 +55,10 @@ const Pricing = () => {
                                 </div>
                                 <div className='flex items-center gap-2'>
                                     <ReturnToolTip
-                                        trigger={<MapPin size={20} className='text-foreground' />}
-                                        content="Server Location"
+                                        trigger={<GitFork size={20} className='text-foreground' />}
+                                        content="Dedicated Ports"
                                     />
-                                    <Label className='w-6'>{plans.location}</Label>
+                                    <Label className='w-6'>{plans.ports}</Label>
                                 </div>
                             </div>
                             <div className='flex items-end w-full justify-between pt-2 border-t'>

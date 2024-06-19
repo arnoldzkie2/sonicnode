@@ -1,9 +1,12 @@
 import db from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from 'bcrypt'
+import { apiLimiter } from "@/lib/api";
 
 export const POST = async (req: NextRequest) => {
     try {
+
+        await apiLimiter.consume(1)
 
         const { username, password } = await req.json()
 

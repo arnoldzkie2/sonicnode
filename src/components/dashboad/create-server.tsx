@@ -39,10 +39,9 @@ const CreateServer = ({ eggs, setServerFormData, serverFormData, plan }: {
             })
         },
         onSuccess: () => {
-            toast.success("Success! you successfully create a server", {
+            toast.success("Success! server created, refresh page to see changes.", {
                 position: 'bottom-center'
             })
-            window.location.reload()
         }
     })
 

@@ -7,9 +7,9 @@ const PLANS = [
         ram: 1536,
         disk: 15,
         price: 300,
-        location: "JPN",
         points: 1,
         description: "Affordable option suitable for Bedrock server setups.",
+        ports: 5,
         players: 10,
     },
     {
@@ -19,10 +19,10 @@ const PLANS = [
         cpu_speed: 3.2,
         ram: 3072,
         disk: 30,
-        price: 400,
-        location: "IND",
-        points: 1,
+        price: 450,
+        points: 1.5,
         description: "Ideal for hosting small Java servers or larger Bedrock servers.",
+        ports: 5,
         players: 15,
     },
     {
@@ -33,9 +33,9 @@ const PLANS = [
         ram: 4096,
         disk: 40,
         price: 650,
-        location: "SNG",
         points: 1,
         description: "High-performance plan tailored for resource-intensive communities.",
+        ports: 5,
         players: 20,
     },
     {
@@ -45,11 +45,11 @@ const PLANS = [
         cpu_speed: 3.2,
         ram: 6144,
         disk: 60,
-        price: 800,
-        location: "IND",
+        price: 850,
         points: 2,
         description: "Optimized for diverse gameplay preferences in large communities.",
-        players: 30,
+        ports: 5,
+        players: 25,
     },
     {
         name: "diamond",
@@ -59,10 +59,10 @@ const PLANS = [
         ram: 8192,
         disk: 80,
         price: 1300,
-        location: "SNG",
         points: 2,
         description: "Optimized for powerful server resources in large-scale communities.",
-        players: 40,
+        ports: 5,
+        players: 30,
     }
 ];
 

@@ -30,13 +30,11 @@ const ConfirmOrder = ({ orderFormData, formBack, setOpen, clearForm }: ConfirmOr
 
     const { isPending, mutateAsync } = trpc.order.createOrder.useMutation({
         onError: async (err) => {
-
             await axios.delete('/api/uploadthing', {
                 data: {
                     url: orderFormData.receipt
                 }
             })
-            
             clearForm()
             setOpen(false)
             return toast.error(err.message)
@@ -44,8 +42,7 @@ const ConfirmOrder = ({ orderFormData, formBack, setOpen, clearForm }: ConfirmOr
         onSuccess: () => {
             clearForm()
             setOpen(false)
-            window.location.reload()
-            return toast.success("Success! order created.")
+            return toast.success("Success! order created, refresh page to see changes.")
         }
     })
 
@@ -83,7 +80,7 @@ const ConfirmOrder = ({ orderFormData, formBack, setOpen, clearForm }: ConfirmOr
                     <Button onClick={formBack} variant={'ghost'} className='w-full'>Back</Button>
                     <Button onClick={async (e: React.MouseEvent) => {
                         e.preventDefault()
-                        if(!confirmed) return toast.error("Please confirm if the information provided is correct.")
+                        if (!confirmed) return toast.error("Please confirm if the information provided is correct.")
                         await mutateAsync({
                             receipt: orderFormData.receipt,
                             price: orderFormData.price,

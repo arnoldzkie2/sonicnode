@@ -15,7 +15,6 @@ interface NodeDescription {
 interface SonicInfo {
     next_billing: string;
     renewal: number;
-    status: number;
     node_points: number;
     deletion_countdown: number;
 }
@@ -180,9 +179,8 @@ export const serverRoute = {
                                     const sonicInfo: SonicInfo = {
                                         next_billing: nextBillingDate.toJSON(),
                                         renewal: selectedPlan.price,
-                                        status: 1,
                                         node_points: selectedPlan.points,
-                                        deletion_countdown: 35
+                                        deletion_countdown: 5
                                     }
 
                                     //get the node points details
@@ -292,15 +290,9 @@ export const serverRoute = {
             await db.$disconnect()
         }
     }),
-    checkBilling: publicProcedure.input(z.string()).query(async (opts) => {
+    checkBilling: publicProcedure.query(async () => {
 
         await apiLimiter.consume(1)
-
-        const key = opts.input
-        if (key !== process.env.API_KEY) throw new TRPCError({
-            code: 'UNAUTHORIZED',
-            message: "Fck you!"
-        })
 
         const servers = await db.servers.findMany({
             where: {
@@ -343,16 +335,15 @@ export const serverRoute = {
         const serversToUpdate = servers
             .map(server => ({
                 ...server,
-                info: JSON.parse(server.sonic_info || '') as SonicInfo,
-                sonic_info: undefined
+                sonic_info: JSON.parse(server.sonic_info || '') as SonicInfo
             }))
-            .filter(server => isTodayOrYesterday(new Date(server.info.next_billing)))
+            .filter(server => isTodayOrYesterday(new Date(server.sonic_info.next_billing)))
 
         // Prepare batch updates
         const updatePromises = serversToUpdate.map(async server => {
 
-            const nextBillingDate = new Date(server.info.next_billing);
-            const renewalAmount = server.info.renewal;
+            const nextBillingDate = new Date(server.sonic_info.next_billing);
+            const renewalAmount = server.sonic_info.renewal;
             const userBalance = server.users.store_balance;
 
             if (userBalance >= renewalAmount) {
@@ -363,8 +354,7 @@ export const serverRoute = {
                 updatedBillingDate.setDate(updatedBillingDate.getDate() + 30)
 
                 const newInfo: SonicInfo = {
-                    ...server.info,
-                    status: 1,
+                    ...server.sonic_info,
                     deletion_countdown: 5,
                     next_billing: updatedBillingDate.toJSON()
                 }
@@ -377,31 +367,30 @@ export const serverRoute = {
                     }),
                     db.servers.update({
                         where: { id: server.id },
-                        data: { sonic_info: JSON.stringify(newInfo) },
-                    }),
-                    sonicApi.post(`/servers/${server.id}/unsuspend`)
+                        data: {
+                            sonic_info: JSON.stringify(newInfo),
+                            status: null
+                        },
+                    })
                 ])
 
             } else {
 
-                if (server.info.deletion_countdown) {
+                if (server.sonic_info.deletion_countdown) {
                     //if server deletion is not 0 reduce it to 1 day
 
                     const newInfo: SonicInfo = {
-                        ...server.info,
-                        deletion_countdown: server.info.deletion_countdown - 1,
-                        status: 0
+                        ...server.sonic_info,
+                        deletion_countdown: server.sonic_info.deletion_countdown - 1,
                     }
 
                     // user has failed renew the server and their server is suspended and deletion date get's reduce day by day
                     await Promise.all([
-                        //update sonic info
+                        //update sonic info and suspend the server
                         db.servers.update({
                             where: { id: server.id },
-                            data: { sonic_info: JSON.stringify(newInfo) }
+                            data: { sonic_info: JSON.stringify(newInfo), status: "suspended" }
                         }),
-                        //suspend the server
-                        sonicApi.post(`/servers/${server.id}/suspend`)
                     ])
 
                 } else {
@@ -418,8 +407,8 @@ export const serverRoute = {
 
                     const newNodePoints: NodeDescription = {
                         maxPoints: nodePoints.maxPoints,
-                        totalPoints: nodePoints.totalPoints - server.info.node_points,
-                        remainingPoints: nodePoints.remainingPoints + server.info.node_points
+                        totalPoints: nodePoints.totalPoints - server.sonic_info.node_points,
+                        remainingPoints: nodePoints.remainingPoints + server.sonic_info.node_points
                     }
 
                     // user has failed renew the server and is being deleted
@@ -438,5 +427,100 @@ export const serverRoute = {
         await Promise.all(updatePromises);
 
         return true
+    }),
+    renewServer: publicProcedure.input(z.number()).mutation(async (opts) => {
+
+        try {
+
+            await apiLimiter.consume(1)
+
+            const auth = await getAuth()
+            if (!auth) throw new TRPCError({
+                code: "UNAUTHORIZED"
+            })
+
+            const serverID = opts.input
+
+            //get the server and user
+            const server = await db.servers.findUnique({
+                where: { id: serverID }, select: {
+                    id: true,
+                    sonic_info: true,
+                    users: {
+                        select: {
+                            id: true,
+                            store_balance: true
+                        }
+                    }
+                }
+            })
+
+            if (!server) throw new TRPCError({
+                code: "NOT_FOUND",
+                message: "Server not found"
+            })
+
+            // get the sonic info for renewal
+            const sonicInfo: SonicInfo = JSON.parse(server.sonic_info || "{}")
+
+            //check if user has enough balance to renew the server
+            if (server.users.store_balance >= sonicInfo.renewal) {
+
+                const today = new Date()
+                // Create a new Date object and set it to 30 days from today
+                const nextBillingDate = new Date();
+                nextBillingDate.setDate(today.getDate() + 30);
+
+                //define the new server sonic info
+                const newServerInfo: SonicInfo = {
+                    ...sonicInfo,
+                    next_billing: nextBillingDate.toJSON(),
+                    deletion_countdown: 5
+                }
+
+                //update the user balance and the server renewal and next billing
+                const [updateUserCredit, updateServerInfo, unsuspendServer] = await Promise.all([
+                    db.users.update({
+                        where: { id: server.users.id }, data: {
+                            store_balance: server.users.store_balance - sonicInfo.renewal
+                        }
+                    }),
+                    db.servers.update({
+                        where: { id: server.id },
+                        data: { sonic_info: JSON.stringify(newServerInfo) }
+                    }),
+                    sonicApi.post(`/servers/${server.id}/unsuspend`)
+                ])
+                if (!updateUserCredit) throw new TRPCError({
+                    code: "BAD_REQUEST",
+                    message: "Something went wrong when updating user sonic coins"
+                })
+                if (!updateServerInfo) throw new TRPCError({
+                    code: "BAD_REQUEST",
+                    message: "Something went wrong when updating server info"
+                })
+                if (!unsuspendServer) throw new TRPCError({
+                    code: "BAD_REQUEST",
+                    message: "Something went wrong when unsuspending server"
+                })
+
+            } else {
+
+                //throw an error that says user doesn't have enough balance to renew the server
+                throw new TRPCError({
+                    code: "BAD_REQUEST",
+                    message: "Not enough balance to renew the server"
+                })
+            }
+
+        } catch (error: any) {
+            console.error(error);
+            throw new TRPCError({
+                code: error.code,
+                message: error.message
+            })
+        } finally {
+            await db.$disconnect()
+        }
     })
 }

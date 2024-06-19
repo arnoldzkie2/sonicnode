@@ -17,8 +17,21 @@ export const dashboadRoute = {
             const [user, eggs] = await Promise.all([
                 db.users.findUnique({
                     where: { id: auth.user.id }, include: {
-                        servers: true, orders: {
-                            take: 20, orderBy: {
+                        servers: {
+                            select: {
+                                id: true,
+                                name: true,
+                                description: true,
+                                sonic_info: true,
+                                status: true,
+                                disk: true,
+                                cpu: true,
+                                memory: true
+                            }
+                        },
+                        orders: {
+                            take: 20,
+                            orderBy: {
                                 created_at: 'desc'
                             }
                         },

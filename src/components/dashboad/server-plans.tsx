@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
 import ReturnToolTip from '../ui/return-tooltip'
 import Image from 'next/image'
-import { Cpu, HardDrive, MapPin, Users } from 'lucide-react'
+import { Cpu, GitFork, HardDrive, Users } from 'lucide-react'
 import { Label } from '../ui/label'
 import CreateServer from './create-server'
 
@@ -67,10 +67,10 @@ const ServerPlans = ({ eggs }: {
                 </div>
                 <div className='flex items-center gap-2'>
                   <ReturnToolTip
-                    trigger={<MapPin size={20} className='text-foreground' />}
-                    content="Server Location"
+                    trigger={<GitFork size={20} className='text-foreground' />}
+                    content="Dedicated Ports"
                   />
-                  <Label className='w-6'>{plan.location}</Label>
+                  <Label className='w-6'>{plan.ports}</Label>
                 </div>
               </div>
               <div className='flex items-end w-full justify-between pt-2 border-t'>

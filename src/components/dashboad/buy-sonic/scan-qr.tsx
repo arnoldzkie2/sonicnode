@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { UploadButton } from '@/lib/utils';
+import axios from 'axios';
 import { CircleCheck } from 'lucide-react';
 import Image from 'next/image';
 import React, { useState } from 'react'
@@ -35,7 +36,6 @@ const ScanQr = ({ orderFormData, formBack, setOrderFormData }: ScanQrProps) => {
         if (!receipt) return toast.error("Receipt is required!")
         setOrderFormData(prev => ({ ...prev, status: 3 }))
     }
-
     return (
         <>
             <div className='flex flex-col gap-2 border-b pb-2'>
@@ -57,7 +57,14 @@ const ScanQr = ({ orderFormData, formBack, setOrderFormData }: ScanQrProps) => {
                         button: 'bg-muted text-foreground border border-black',
                         allowedContent: 'hidden'
                     }}
-                    onClientUploadComplete={(data) => {
+                    onClientUploadComplete={async (data) => {
+                        if (orderFormData.receipt) {
+                            await axios.delete('/api/uploadthing', {
+                                data: {
+                                    url: orderFormData.receipt
+                                }
+                            })
+                        }
                         setOrderFormData(prev => ({ ...prev, receipt: data[0].url }))
                         toast.success("Success! receipt uploaded.")
                     }}

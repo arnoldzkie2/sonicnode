@@ -8,6 +8,7 @@ import { Cpu, HardDrive, LogIn, MemoryStick } from 'lucide-react'
 import ReturnToolTip from '../ui/return-tooltip'
 import Image from 'next/image'
 import { SonicInfo } from '@/server/routes/serverRoute'
+import RenewServer from './renew-server'
 
 interface Props {
     initialData: Awaited<ReturnType<(typeof caller['dashboard']['getDashboardData'])>>
@@ -31,9 +32,7 @@ const UserServers = ({ initialData }: Props) => {
             <div className='flex flex-wrap w-full gap-5'>
                 {
                     servers.length > 0 ? servers.map((server, i) => {
-
                         const sonicInfo: SonicInfo = JSON.parse(server.sonic_info || "{}")
-
                         return (
                             <Card key={i} className='w-full'>
                                 <CardHeader>
@@ -75,10 +74,21 @@ const UserServers = ({ initialData }: Props) => {
                                     </div>
                                     <div className='flex w-full items-center justify-between'>
                                         <small className='text-muted-foreground'>Next Billing: {new Date(sonicInfo.next_billing || '').toLocaleDateString()}</small>
-                                        <Button variant={sonicInfo.status ? 'secondary' : "destructive"} className='h-8 cursor-default w-24'>
-                                            {sonicInfo.status ? "Active" : "Suspended"}
+                                        <Button variant={server.status === 'suspended' ? 'destructive' : server.status === 'installing' ? "default" : "secondary"} className='h-8 cursor-default w-24'>
+                                            {server.status === "installing" ? "Installing" : server.status === "suspended" ? "Suspended" : "Active"}
                                         </Button>
                                     </div>
+                                    {server.status === 'suspended' && <div className='space-y-3 text-primary pt-3 border-t'>
+                                        <div className='text-sm'>
+                                            This Server will be deleted in {sonicInfo.deletion_countdown || 0} {sonicInfo.deletion_countdown > 1 ? "days" : "day"} if not renewed.
+                                        </div>
+                                        <div className='flex w-full items-center gap-5'>
+                                            <Link href={process.env.NEXT_PUBLIC_APP_URL as string} className='w-full'>
+                                                <Button className='w-full' variant={'secondary'}>Backup</Button>
+                                            </Link>
+                                            <RenewServer serverID={server.id} />
+                                        </div>
+                                    </div>}
                                 </CardContent>
                             </Card>
                         )
