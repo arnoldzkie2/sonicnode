@@ -26,7 +26,7 @@ const AdminPage = async ({ params }: AdminProps) => {
     return (
         <div className='px-5 sm:px-10 md:container'>
             <DashboardHeader />
-            <div className='pt-14 w-full flex justify-center'>
+            <div className='pt-28 w-full flex justify-center'>
                 <div className='flex flex-col w-full max-w-[1000px] gap-3'>
                     <SelectStatus status={params.orderStatus} />
                     <OrderTable orders={orders} />
