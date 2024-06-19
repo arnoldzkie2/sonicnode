@@ -30,7 +30,7 @@ export const dashboadRoute = {
                             }
                         },
                         orders: {
-                            take: 20,
+                            take: 5,
                             orderBy: {
                                 created_at: 'desc'
                             }

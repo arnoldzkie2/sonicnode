@@ -63,7 +63,7 @@ const ServerPlans = ({ eggs }: {
                     trigger={<Cpu size={20} className='text-foreground' />}
                     content="Cpu Power Available"
                   />
-                  <Label>Cpu: {plan.cpu} ({plan.cpu_speed}GHz)</Label>
+                  <Label>Cpu: {plan.cpu}% ({plan.cpu_speed}GHz)</Label>
                 </div>
                 <div className='flex items-center gap-2'>
                   <ReturnToolTip

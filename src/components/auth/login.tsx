@@ -23,7 +23,6 @@ const LoginForm = () => {
             if (!captchaVerified) {
                 const recaptchaValue = await recaptchaRef.current.executeAsync();
                 if (!recaptchaValue) return toast.error("Verify recaptcha")
-
                 setLoading(true)
                 await verifyRecaptcha.mutateAsync(recaptchaValue)
                     .then(_ => {

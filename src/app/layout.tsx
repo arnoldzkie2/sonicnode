@@ -9,7 +9,8 @@ import Adsense from "@/components/Adsense";
 export const metadata: Metadata = {
   title: "Sonic Node",
   icons: '/logo.svg',
-  description: "The best minecraft server hosting in asia.",
+  description: "A reliable minecraft server hosting in asia.",
+
 };
 
 export default function RootLayout({

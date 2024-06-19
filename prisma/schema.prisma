@@ -679,6 +679,8 @@ model users_orders {
   price      String
   method     String
   currency   String
+  note       String?
+  amount     String
   receipt    String
   user       users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id    Int      @db.UnsignedInt

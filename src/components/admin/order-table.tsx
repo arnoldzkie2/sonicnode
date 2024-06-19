@@ -1,26 +1,16 @@
 import React from 'react'
-import { users_orders } from '@prisma/client'
-import {
-    Table,
-    TableBody,
-    TableCaption,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
-import { Button } from '../ui/button'
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogTrigger } from '../ui/alert-dialog'
+import { caller } from '@/app/_trpc/server'
+import { Button } from '../ui/button'
 import Image from 'next/image'
-import OrderNote from './order/note'
+import OrderOperation from './order-operation'
 
-interface OrderTableProps {
-    data: users_orders[]
-}
-
-const OrderTable = ({ data }: OrderTableProps) => {
+const OrderTable = ({ orders }: {
+    orders: Awaited<ReturnType<(typeof caller['order']['getAllOrders'])>>
+}) => {
     return (
-        <div className="w-full max-w-[1000px]">
+        <div className="w-full">
             <Table>
                 <TableCaption>Order History</TableCaption>
                 <TableHeader>
@@ -30,13 +20,12 @@ const OrderTable = ({ data }: OrderTableProps) => {
                         <TableHead>Price</TableHead>
                         <TableHead>Currency</TableHead>
                         <TableHead>Receipt</TableHead>
-                        <TableHead>Note</TableHead>
                         <TableHead>Date</TableHead>
-                        <TableHead>ID</TableHead>
+                        <TableHead>Operation</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {data.length > 0 ? data.map(order => (
+                    {orders.orders.length > 0 ? orders.orders.map(order => (
                         <TableRow key={order.id} className='text-muted-foreground'>
                             <TableCell>{order.status}</TableCell>
                             <TableCell>{order.method}</TableCell>
@@ -53,15 +42,14 @@ const OrderTable = ({ data }: OrderTableProps) => {
                                     </AlertDialogContent>
                                 </AlertDialog>
                             </TableCell>
-                            <TableCell>
-                                <OrderNote note={order.note || ''} />
-                            </TableCell>
                             <TableCell>{new Date(order.created_at).toLocaleString()}</TableCell>
-                            <TableCell>{order.id}</TableCell>
+                            <TableCell>
+                                <OrderOperation order={order} />
+                            </TableCell>
                         </TableRow>
                     )) :
                         <TableRow>
-                            <TableCell className='min-w-28'>No Orders</TableCell>
+                            <TableCell className='min-w-28'>No Orders Yet</TableCell>
                         </TableRow>
                     }
                 </TableBody>

@@ -67,7 +67,7 @@ export const serverRoute = {
                 //check if user has enough sonic coin to purchase a server
                 if (user.store_balance < selectedPlan.price) throw new TRPCError({
                     code: "BAD_REQUEST",
-                    message: "You don't have enough balance to buy this plan"
+                    message: "You don't have enough sonic coin to buy this plan"
                 })
 
                 //select all nodes that matched the selected plan
@@ -504,12 +504,14 @@ export const serverRoute = {
                     message: "Something went wrong when unsuspending server"
                 })
 
+                return true
+
             } else {
 
                 //throw an error that says user doesn't have enough balance to renew the server
                 throw new TRPCError({
                     code: "BAD_REQUEST",
-                    message: "Not enough balance to renew the server"
+                    message: "Not enough sonic coin to renew the server"
                 })
             }
 

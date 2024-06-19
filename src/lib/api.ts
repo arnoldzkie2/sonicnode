@@ -15,8 +15,8 @@ const setupAxios = () => {
 }
 
 const opts = {
-    points: 10, // 6 points
-    duration: 1 * 60, // Per second
+    points: 5,
+    duration: 1 * 30,
 };
 
 export const apiLimiter = new RateLimiterMemory(opts);

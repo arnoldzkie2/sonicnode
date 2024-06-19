@@ -19,7 +19,13 @@ const Page = () => {
     const setAuthPage = useAuthStore(s => s.setAuthPage)
 
     useEffect(() => {
-        if (session.status === 'authenticated') router.push('/dashboard')
+        if (session.status === 'authenticated') {
+            if (session.data.user.root_admin) {
+                router.push('/admin/pending')
+            } else {
+                router.push('/dashboard')
+            }
+        }
     }, [session])
 
     return (
