@@ -3,6 +3,8 @@ import { Label } from '../ui/label'
 import { Cpu, GlobeLock, LogIn, MemoryStick, ShieldCheck } from 'lucide-react'
 import { Button } from '../ui/button'
 import Link from 'next/link'
+import { SOCIAL } from '@/constant/links'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const Pterodatyl = () => {
   return (
@@ -14,12 +16,23 @@ const Pterodatyl = () => {
           <p className='text-muted-foreground'>
             Enjoy full control over your server with an intuitive interface, allowing you to customize settings, manage players, and install plugins with ease. Experience reliable performance and security, perfect for serious gamers and server administrators.
           </p>
-          <Link href={'https://panel.sonicnode.xyz'}>
-            <Button className='w-44'>
-              Login Panel
-              <LogIn className='ml-3' />
-            </Button>
-          </Link>
+          <div className='flex items-center gap-5'>
+            <Link href={'https://panel.sonicnode.xyz'}>
+              <Button className='w-44'>
+                Login Panel
+                <LogIn className='ml-3' />
+              </Button>
+            </Link>
+            <div className='flex items-center gap-3 mt-auto'>
+              {SOCIAL.map((link, i) => (
+                <Link key={i} href={link.link} className='text-foreground' target='_blank'>
+                  <Button variant={'ghost'}>
+                    <FontAwesomeIcon icon={link.icon} width={20} height={20} className='text-lg' />
+                  </Button>
+                </Link>
+              ))}
+            </div>
+          </div>
         </div>
         <div className='w-full'>
           <video width="640" height="360" className='h-full w-full rounded-2xl shadow shadow-yellow-300' autoPlay loop muted>

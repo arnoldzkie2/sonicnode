@@ -1,3 +1,4 @@
+import Contact from '@/components/home/contact'
 import Footer from '@/components/home/footer'
 import Header from '@/components/home/header'
 import Main from '@/components/home/main'
@@ -15,6 +16,7 @@ const HomePage = () => {
       <Pterodatyl />
       <Trial />
       <Pricing />
+      <Contact />
       <Footer />
     </div>
   )

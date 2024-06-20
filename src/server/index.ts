@@ -1,3 +1,4 @@
+import { contactRoute } from './routes/contactRoute';
 import { dashboadRoute } from './routes/dashboardRoute';
 import { orderRoute } from './routes/orderRoute';
 import { serverPlansRoute } from './routes/serverPlansRoute';
@@ -10,7 +11,8 @@ export const appRouter = router({
     dashboard: dashboadRoute,
     server: serverRoute,
     order: orderRoute,
-    server_plans: serverPlansRoute
+    server_plans: serverPlansRoute,
+    contact: contactRoute
 });
 
 export type AppRouter = typeof appRouter;

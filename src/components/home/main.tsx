@@ -24,17 +24,17 @@ const Main = () => {
                     </Link>
                 </div>
             </div>
-            <Separator className='hidden md:flex' />
-            <ul className='flex flex-col text-start gap-4'>
-                <Label className='text-2xl md:text-center'>Key Features:</Label>
-                <div className='flex flex-col md:flex-row flex-wrap md:justify-center gap-5 md:w-full xl:w-2/3 self-center md:items-center'>
+            <Separator className='hidden sm:flex' />
+            <ul className='flex flex-col text-start self-start gap-4'>
+                <Label className='text-2xl sm:text-center'>Key Features:</Label>
+                <div className='flex flex-col sm:flex-row flex-wrap sm:justify-center gap-5 sm:w-full xl:w-2/3 self-center sm:items-center'>
                     {FEATURES.map((item, i) => (
                         <div className='flex items-center text-muted-foreground gap-3' key={i}>
-                            <CircleCheckBig size={16} className='md:hidden text-foreground' />
-                            <Label className='md:hidden'>
+                            <CircleCheckBig size={16} className='sm:hidden text-foreground' />
+                            <Label className='sm:hidden'>
                                 {item}
                             </Label>
-                            <Button className='hidden md:flex' variant={'outline'}>{item}</Button>
+                            <Button className='hidden sm:flex' variant={'outline'}>{item}</Button>
                         </div>
                     ))}
                 </div>

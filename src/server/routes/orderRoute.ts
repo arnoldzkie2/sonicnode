@@ -6,8 +6,8 @@ import db from "@/lib/db";
 import { ORDERSTATUS } from "@/constant/status";
 import { apiLimiter } from "@/lib/api";
 import { OrderVerified } from '@/components/emails/order-verified'
-import { Resend } from "resend";
 import InvalidOrder from "@/components/emails/order-invalid";
+import { Resend } from "resend";
 const resend = new Resend(process.env.RESEND_API_KEY as string)
 
 export const orderRoute = {
@@ -249,7 +249,7 @@ export const orderRoute = {
                     }
                 }),
                 resend.emails.send({
-                    from: 'SonicNode<support@sonicnode.xyz>',
+                    from: 'SonicNode <support@sonicnode.xyz>',
                     to: user.email,
                     subject: 'Order verified',
                     reply_to: 'support@sonicnode.xyz',
@@ -310,7 +310,7 @@ export const orderRoute = {
                     }
                 }),
                 resend.emails.send({
-                    from: 'SonicNode<support@sonicnode.xyz>',
+                    from: 'SonicNode <support@sonicnode.xyz>',
                     to: auth.user.email,
                     subject: 'Invalid Order',
                     reply_to: 'support@sonicnode.xyz',

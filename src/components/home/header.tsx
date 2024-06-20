@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import React from 'react'
 import { ModeToggle } from '../ui/toggle-theme'
-import { LogIn, LogInIcon, Menu, NotepadText } from 'lucide-react'
+import { LogIn, LogInIcon, Menu, NotepadText, PhoneCall } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import { Button } from '../ui/button'
 import Image from 'next/image'
@@ -34,6 +34,15 @@ const Header = () => {
                 </DropdownMenuShortcut>
               </DropdownMenuItem>
             </ScrollLink>
+            <ScrollLink href='#contact' to='contact' smooth={true} duration={2000}>
+              <DropdownMenuItem>
+                Contact
+                <DropdownMenuShortcut>
+                  <PhoneCall size={16} />
+                </DropdownMenuShortcut>
+              </DropdownMenuItem>
+            </ScrollLink>
+
             {session && session.status === 'authenticated' ?
               <Link href={'/dashboard'}>
                 <DropdownMenuItem>
@@ -61,6 +70,10 @@ const Header = () => {
         <ScrollLink href='#plans' to='plans' smooth={true} duration={2000} className='hover:text-foreground cursor-pointer flex items-center gap-2'>
           Plans
           <NotepadText size={16} className='' />
+        </ScrollLink>
+        <ScrollLink href='#contact' to='contact' smooth={true} duration={2000} className='hover:text-foreground cursor-pointer flex items-center gap-2'>
+          Contact
+          <PhoneCall size={16} className='' />
         </ScrollLink>
       </ul>
       <ModeToggle />
