@@ -1,4 +1,3 @@
-import { PLANS } from '@/constant/plans'
 import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
 import { Cpu, GitFork, HardDrive, ShoppingCart, Users } from 'lucide-react'
@@ -7,12 +6,16 @@ import ReturnToolTip from '../ui/return-tooltip'
 import { Button } from '../ui/button'
 import Image from 'next/image'
 import Link from 'next/link'
+import { caller } from '@/app/_trpc/server'
 
-const Pricing = () => {
+const Pricing = async () => {
+
+    const plans = await caller.server_plans.getAll()
+
     return (
         <div className='flex flex-col py-16' id='plans'>
             <div className='flex flex-wrap gap-8 justify-center'>
-                {PLANS.map((plans, i) => (
+                {plans.map((plans, i) => (
                     <Card key={i} className='w-full max-w-80 cursor-pointer hover:shadow-2xl hover:rounded-2xl hover:shadow-yellow-400 hover:scale-[101%] transition-all'>
                         <CardHeader>
                             <CardTitle className='flex items-center justify-between w-full'>
@@ -58,7 +61,7 @@ const Pricing = () => {
                                         trigger={<GitFork size={20} className='text-foreground' />}
                                         content="Dedicated Ports"
                                     />
-                                    <Label className='w-6'>{plans.ports}</Label>
+                                    <Label className='w-6'>5</Label>
                                 </div>
                             </div>
                             <div className='flex items-end w-full justify-between pt-2 border-t'>

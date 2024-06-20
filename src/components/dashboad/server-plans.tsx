@@ -1,31 +1,25 @@
-'use client'
-import { PLANS } from '@/constant/plans'
-import React, { useState } from 'react'
+import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
 import ReturnToolTip from '../ui/return-tooltip'
 import Image from 'next/image'
 import { Cpu, GitFork, HardDrive, Users } from 'lucide-react'
 import { Label } from '../ui/label'
 import CreateServer from './create-server'
+import { caller } from '@/app/_trpc/server'
 
-const ServerPlans = ({ eggs }: {
+const ServerPlans = async ({ eggs }: {
   eggs: {
     name: string,
     id: number
   }[] | undefined
 }) => {
 
-  const [serverFormData, setServerFormData] = useState({
-    plan: '',
-    name: '',
-    egg: '',
-    description: ''
-  })
+  const plans = await caller.server_plans.getAll()
 
   return (
     <div className='flex flex-col pt-5 items-center pb-10' id='plans'>
       <div className='flex flex-wrap gap-5 md:gap-10 justify-center'>
-        {PLANS.map((plan, i) => (
+        {plans.map((plan, i) => (
           <Card key={i} className='w-full max-w-80 cursor-pointer hover:shadow-2xl hover:rounded-2xl hover:shadow-yellow-400 hover:scale-[101%] transition-all'>
             <CardHeader>
               <CardTitle className='flex items-center justify-between w-full'>
@@ -70,7 +64,7 @@ const ServerPlans = ({ eggs }: {
                     trigger={<GitFork size={20} className='text-foreground' />}
                     content="Dedicated Ports"
                   />
-                  <Label className='w-6'>{plan.ports}</Label>
+                  <Label className='w-6'>5</Label>
                 </div>
               </div>
               <div className='flex items-end w-full justify-between pt-2 border-t'>
@@ -88,9 +82,7 @@ const ServerPlans = ({ eggs }: {
                 </div>
                 <CreateServer
                   eggs={eggs}
-                  plan={plan.name}
-                  serverFormData={serverFormData}
-                  setServerFormData={setServerFormData}
+                  planID={plan.id}
                 />
               </div>
             </CardContent>

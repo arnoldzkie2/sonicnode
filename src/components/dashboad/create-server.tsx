@@ -10,27 +10,22 @@ import { trpc } from '@/app/_trpc/client'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { toast } from 'sonner'
 
-const CreateServer = ({ eggs, setServerFormData, serverFormData, plan }: {
+const CreateServer = ({ eggs, planID }: {
     eggs: {
         name: string
         id: number
     }[] | undefined
-    plan: string
-    setServerFormData: React.Dispatch<React.SetStateAction<{
-        plan: string;
-        name: string;
-        description: string
-        egg: string;
-    }>>
-    serverFormData: {
-        plan: string;
-        description: string
-        name: string;
-        egg: string;
-    }
+    planID: number
 }) => {
 
     const [open, setOpen] = useState(false)
+
+    const [serverFormData, setServerFormData] = useState({
+        planID: 0,
+        name: '',
+        egg: '',
+        description: ''
+    })
 
     const userServers = trpc.server.getUserServers.useQuery(undefined, {
         refetchOnMount: false,
@@ -66,7 +61,7 @@ const CreateServer = ({ eggs, setServerFormData, serverFormData, plan }: {
         <AlertDialog open={open} onOpenChange={setOpen}>
             <AlertDialogTrigger asChild onClick={() => setServerFormData(prev => ({
                 ...prev,
-                plan
+                planID
             }))}>
                 <Button className='rounded-full w-[55px] h-[55px] bg-muted text-foreground hover:text-white'>
                     <ShoppingCart size={25} />

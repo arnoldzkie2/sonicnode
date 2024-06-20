@@ -58,6 +58,7 @@ export const dashboadRoute = {
 
                 return total
             }, 0)
+            
             const modifyOrders = user.orders.map(order => ({
                 ...order,
                 created_at: order.created_at.toJSON(),

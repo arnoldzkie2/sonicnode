@@ -577,8 +577,8 @@ model users {
   gravatar              Boolean           @default(true)
   created_at            DateTime?         @db.Timestamp(0)
   updated_at            DateTime?         @db.Timestamp(0)
-  more_info String? @default("")
-  sonic_coin Int @default(0)
+  more_info             String?           @default("")
+  sonic_coin            Int               @default(0)
   orders                users_orders[]
   api_keys              api_keys[]
   audit_logs            audit_logs[]
@@ -605,4 +605,20 @@ model users_orders {
   user       users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([user_id], map: "users_orders_user_id_fkey")
+}
+
+model server_plans {
+  id          Int      @id @default(autoincrement()) @db.UnsignedInt
+  name        String
+  node        String
+  cpu         Int
+  cpu_speed   String
+  ram         Int
+  disk        Int
+  price       Int
+  points      Int
+  description String
+  players     Int
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 }
