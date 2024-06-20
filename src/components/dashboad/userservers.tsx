@@ -1,14 +1,16 @@
+'use client'
 import { caller } from '@/app/_trpc/server'
 import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
 import { Label } from '../ui/label'
 import Link from 'next/link'
 import { Button } from '../ui/button'
-import { Cpu, HardDrive, LogIn, MemoryStick } from 'lucide-react'
+import { Cpu, HardDrive, LoaderCircle, LogIn, MemoryStick } from 'lucide-react'
 import ReturnToolTip from '../ui/return-tooltip'
 import Image from 'next/image'
 import { SonicInfo } from '@/server/routes/serverRoute'
 import RenewServer from './renew-server'
+import { trpc } from '@/app/_trpc/client'
 
 interface Props {
     initialData: Awaited<ReturnType<(typeof caller['dashboard']['getDashboardData'])>>
@@ -16,12 +18,37 @@ interface Props {
 
 const UserServers = ({ initialData }: Props) => {
 
-    const { servers } = initialData
+    const { data } = trpc.server.getUserServers.useQuery(undefined, {
+        initialData: initialData.servers,
+        refetchOnMount: false
+    })
+
+    const returnStatusButton = (status: string | null) => {
+
+        switch (status) {
+            case "installing":
+                return (
+                    <Button className='h-8 w-24 p-0'>
+                        <LoaderCircle size={16} className='animate-spin' />
+                    </Button>
+                )
+            case "suspended":
+                return (
+                    <Button className='h-8 w-24' variant={'destructive'}>
+                        Suspended
+                    </Button>
+                )
+            default:
+                return (
+                    <Button className='h-8 w-24 bg-green-500 hover:bg-green-500 text-secondary'>Active</Button>
+                )
+        }
+    }
 
     return (
         <div className='flex pt-5 pb-10 flex-col gap-2 w-full max-w-[500px]'>
             <div className='border-b pb-3 mb-3 flex items-center gap-5 w-full justify-between'>
-                <Label className='text-base'>{"Total: "} {servers.length}</Label>
+                <Label className='text-base'>{"Total: "} {data.length}</Label>
                 <Link href={process.env.NEXT_PUBLIC_APP_URL as string || '/'}>
                     <Button className='flex items-center gap-2'>
                         <div>Panel</div>
@@ -31,13 +58,12 @@ const UserServers = ({ initialData }: Props) => {
             </div>
             <div className='flex flex-wrap w-full gap-5'>
                 {
-                    servers.length > 0 ? servers.map((server, i) => {
+                    data.length > 0 ? data.map((server, i) => {
                         const sonicInfo: SonicInfo = JSON.parse(server.sonic_info || "{}")
                         return (
                             <Card key={i} className='w-full'>
                                 <CardHeader>
                                     <CardTitle>{server.name}</CardTitle>
-                                    <CardDescription>{server.description}</CardDescription>
                                 </CardHeader>
                                 <CardContent className='flex flex-col gap-2 text-muted-foreground'>
                                     <div className='flex w-full justify-between'>
@@ -74,9 +100,7 @@ const UserServers = ({ initialData }: Props) => {
                                     </div>
                                     <div className='flex w-full items-center justify-between'>
                                         <small className='text-muted-foreground'>Next Billing: {new Date(sonicInfo.next_billing || '').toLocaleDateString()}</small>
-                                        <Button variant={server.status === 'suspended' ? 'destructive' : server.status === 'installing' ? "default" : "secondary"} className='h-8 cursor-default w-24'>
-                                            {server.status === "installing" ? "Installing" : server.status === "suspended" ? "Suspended" : "Active"}
-                                        </Button>
+                                        {returnStatusButton(server.status)}
                                     </div>
                                     {server.status === 'suspended' && <div className='space-y-3 text-primary pt-3 border-t'>
                                         <div className='text-sm'>

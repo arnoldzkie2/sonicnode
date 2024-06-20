@@ -22,6 +22,47 @@ interface SonicInfo {
 export type { SonicInfo, NodeDescription }
 
 export const serverRoute = {
+    getUserServers: publicProcedure.query(async () => {
+        try {
+
+            const auth = await getAuth()
+            if (!auth) throw new TRPCError({
+                code: "UNAUTHORIZED"
+            })
+
+            const user = await db.users.findUnique({
+                where: { id: auth.user.id }, select: {
+                    servers: {
+                        select: {
+                            id: true,
+                            name: true,
+                            description: true,
+                            sonic_info: true,
+                            status: true,
+                            disk: true,
+                            cpu: true,
+                            memory: true
+                        }
+                    }
+                }
+            })
+            if (!user) throw new TRPCError({
+                code: 'NOT_FOUND',
+                message: "User not found"
+            })
+
+            return user.servers
+
+        } catch (error: any) {
+            console.error(error);
+            throw new TRPCError({
+                code: error.code,
+                message: error.message
+            })
+        } finally {
+            await db.$disconnect()
+        }
+    }),
     createServer: publicProcedure.input(z.object({
         plan: z.string(),
         name: z.string(),
@@ -72,9 +113,7 @@ export const serverRoute = {
 
                 //select all nodes that matched the selected plan
                 const selectedNodes = await db.nodes.findMany({
-                    where: { name: selectedPlan.node }, include: {
-                        servers: true
-                    }
+                    where: { name: selectedPlan.node }
                 })
 
                 //if there is available node with that name proceed
@@ -83,6 +122,7 @@ export const serverRoute = {
                     const availableNode = selectedNodes.filter(node => {
 
                         const nodeDescription: NodeDescription = JSON.parse(node.description as string)
+
                         const { remainingPoints, maxPoints, totalPoints } = nodeDescription
                         const requiredPoints = selectedPlan.points
 
@@ -118,7 +158,8 @@ export const serverRoute = {
                                     code: "BAD_REQUEST",
                                     message: "Server type does not exist"
                                 })
-                                const dockerImages = JSON.parse(checkEgg.docker_images as string)
+
+                                const dockerImages = Object.values(checkEgg.docker_images as string)
 
                                 //this is the variables we'll use to create the server
                                 const eggEnvironment = checkEgg.egg_variables.reduce((acc: any, variable) => {
@@ -427,6 +468,7 @@ export const serverRoute = {
         await Promise.all(updatePromises);
 
         return true
+
     }),
     renewServer: publicProcedure.input(z.number()).mutation(async (opts) => {
 

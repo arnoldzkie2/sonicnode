@@ -43,7 +43,7 @@ const Instructions = ({ acceptInstruction, setAcceptInstruction }: {
                 <div className='flex flex-col mt-5'>
                     <Label className='text-lg'>Forgot to Take a Screenshot?</Label>
                     <small className='text-muted-foreground'>
-                        If you forget to take a screenshot of your receipt, you can verify your payment by creating a support ticket in the panel. Please provide the following information:</small>
+                        If you forget to take a screenshot of your receipt, you can contact us at <span className='underline text-foreground'>support@sonicnode.xyz</span> to verify the order. Please provide the following information:</small>
                 </div>
                 <ul className='list-disc list-inside ml-4 space-y-1'>
                     <li>

@@ -3,15 +3,15 @@ import React from 'react'
 import { Separator } from '../ui/separator'
 import BuySonic from './buy-sonic/buy-sonic'
 import OrderTable from './order-table'
-import { users_orders } from '@prisma/client'
+import { caller } from '@/app/_trpc/server'
 
 interface UserCreditProps {
-    credits: number,
-    totalMonthlyBilling: number
-    orders: users_orders[]
+    initialData: Awaited<ReturnType<(typeof caller['dashboard']['getDashboardData'])>>
 }
 
-const UserCredits = ({ credits, totalMonthlyBilling, orders }: UserCreditProps) => {
+const UserCredits = ({ initialData }: UserCreditProps) => {
+
+    const { credits, totalMonthlyBilling } = initialData
 
     return (
         <div className='flex flex-col gap-5 py-8 w-full items-center'>
@@ -37,7 +37,7 @@ const UserCredits = ({ credits, totalMonthlyBilling, orders }: UserCreditProps) 
                 </div>
             </div>
             <Separator className='w-1/2' />
-            <OrderTable data={orders} />
+            <OrderTable initialData={initialData} />
         </div>
     )
 }

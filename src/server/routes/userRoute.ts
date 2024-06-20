@@ -100,8 +100,6 @@ export const userRoute = {
         }
     }),
     test: publicProcedure.query(async () => {
-
-        const users = await db.nests.findMany()
-        return users
+        return true
     })
 }

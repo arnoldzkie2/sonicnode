@@ -32,16 +32,33 @@ const CreateServer = ({ eggs, setServerFormData, serverFormData, plan }: {
 
     const [open, setOpen] = useState(false)
 
+    const userServers = trpc.server.getUserServers.useQuery(undefined, {
+        refetchOnMount: false,
+    })
+
     const createServer = trpc.server.createServer.useMutation({
         onError: (err) => {
             toast.error(err.message, {
                 position: 'bottom-center'
             })
         },
-        onSuccess: () => {
-            toast.success("Success! server created, refresh page to see changes.", {
+        onSuccess: async () => {
+            userServers.refetch()
+            toast.success("Success! server created.", {
                 position: 'bottom-center'
             })
+            setOpen(false)
+
+            // Function to refetch 10 times every 10 seconds
+            let refetchCount = 0;
+            const intervalId = setInterval(() => {
+                if (refetchCount < 6) {
+                    userServers.refetch();
+                    refetchCount++;
+                } else {
+                    clearInterval(intervalId);
+                }
+            }, 10000); // 10000 milliseconds = 10 seconds
         }
     })
 

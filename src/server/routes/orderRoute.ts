@@ -5,6 +5,10 @@ import { TRPCError } from "@trpc/server";
 import db from "@/lib/db";
 import { ORDERSTATUS } from "@/constant/status";
 import { apiLimiter } from "@/lib/api";
+import { OrderVerified } from '@/components/emails/order-verified'
+import { Resend } from "resend";
+import InvalidOrder from "@/components/emails/order-invalid";
+const resend = new Resend(process.env.RESEND_API_KEY as string)
 
 export const orderRoute = {
 
@@ -42,6 +46,48 @@ export const orderRoute = {
                 orders,
                 totalOrders
             }
+
+        } catch (error: any) {
+            console.error(error);
+            throw new TRPCError({
+                code: error.code,
+                message: error.message
+            })
+        } finally {
+            await db.$disconnect()
+        }
+    }),
+    getUserOrders: publicProcedure.query(async () => {
+        try {
+
+            const auth = await getAuth()
+            if (!auth) throw new TRPCError({
+                code: "UNAUTHORIZED"
+            })
+
+            const user = await db.users.findUnique({
+                where: { id: auth.user.id },
+                include: {
+                    orders: {
+                        take: 5,
+                        orderBy: {
+                            created_at: 'desc'
+                        }
+                    }
+                }
+            })
+            if (!user) throw new TRPCError({
+                code: "NOT_FOUND",
+                message: "User not found"
+            })
+
+            const modifyOrders = user.orders.map(order => ({
+                ...order,
+                created_at: order.created_at.toJSON(),
+                updated_at: order.updated_at.toJSON()
+            }))
+
+            return modifyOrders
 
         } catch (error: any) {
             console.error(error);
@@ -117,7 +163,7 @@ export const orderRoute = {
                     price, method, currency, receipt,
                     status: ORDERSTATUS['pending'],
                     amount: 'pending',
-                    note: "Our team will automatically calculate the total amount of sonic coins after the payment is verified.",
+                    note: "Once we verify your order, you will receive an email notification and your Sonic Coin will be added to your account.",
                     user: {
                         connect: {
                             id: user.id
@@ -188,7 +234,7 @@ export const orderRoute = {
             })
 
             //update the order and give the user their sonic coin
-            const [updateOrder, giveUserSonicCoin] = await Promise.all([
+            const [updateOrder, giveUserSonicCoin, notifyUser] = await Promise.all([
                 db.users_orders.update({
                     where: { id: order.id },
                     data: {
@@ -201,8 +247,20 @@ export const orderRoute = {
                     data: {
                         sonic_coin: user.sonic_coin + amount
                     }
+                }),
+                resend.emails.send({
+                    from: 'SonicNode<support@sonicnode.xyz>',
+                    to: user.email,
+                    subject: 'Order verified',
+                    reply_to: 'support@sonicnode.xyz',
+                    react: OrderVerified({ username: user.username, sonic_amount: amount }),
                 })
             ])
+
+            if (notifyUser.error) throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: "Faild to send email to user"
+            })
 
             if (!updateOrder) throw new TRPCError({
                 code: "BAD_REQUEST",
@@ -243,16 +301,32 @@ export const orderRoute = {
             })
 
             //update the order status
-            const updateOrder = await db.users_orders.update({
-                where: { id: order.id },
-                data: {
-                    status: ORDERSTATUS['invalid'],
-                    note: "If you think this is a mistake please contact our support team."
-                }
-            })
+            const [updateOrder, invalidOrder] = await Promise.all([
+                db.users_orders.update({
+                    where: { id: order.id },
+                    data: {
+                        status: ORDERSTATUS['invalid'],
+                        note: "If you think this is a mistake please contact our support team."
+                    }
+                }),
+                resend.emails.send({
+                    from: 'SonicNode<support@sonicnode.xyz>',
+                    to: auth.user.email,
+                    subject: 'Invalid Order',
+                    reply_to: 'support@sonicnode.xyz',
+                    react: InvalidOrder({ username: auth.user.username }),
+                    text: ""
+                })
+            ])
+
             if (!updateOrder) throw new TRPCError({
                 code: "BAD_REQUEST",
                 message: "Failed to update user order"
+            })
+
+            if (invalidOrder.error) throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: invalidOrder.error.message
             })
 
             return true

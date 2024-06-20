@@ -1,3 +1,4 @@
+'use client'
 import React from 'react'
 import { users_orders } from '@prisma/client'
 import {
@@ -13,12 +14,20 @@ import { Button } from '../ui/button'
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogTrigger } from '../ui/alert-dialog'
 import Image from 'next/image'
 import OrderNote from './order/note'
+import { trpc } from '@/app/_trpc/client'
+import { caller } from '@/app/_trpc/server'
 
 interface OrderTableProps {
-    data: users_orders[]
+    initialData: Awaited<ReturnType<(typeof caller['dashboard']['getDashboardData'])>>
 }
 
-const OrderTable = ({ data }: OrderTableProps) => {
+const OrderTable = ({ initialData }: OrderTableProps) => {
+
+    const orders = trpc.order.getUserOrders.useQuery(undefined, {
+        initialData: initialData.orders,
+        refetchOnMount: false
+    })
+
     return (
         <div className="w-full max-w-[1000px]">
             <Table>
@@ -36,7 +45,7 @@ const OrderTable = ({ data }: OrderTableProps) => {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {data.length > 0 ? data.map(order => (
+                    {orders.data.length > 0 ? orders.data.map(order => (
                         <TableRow key={order.id} className='text-muted-foreground'>
                             <TableCell>{order.status}</TableCell>
                             <TableCell>{order.method}</TableCell>
@@ -47,7 +56,7 @@ const OrderTable = ({ data }: OrderTableProps) => {
                                     <AlertDialogTrigger asChild>
                                         <Button className='h-7'>View</Button>
                                     </AlertDialogTrigger>
-                                    <AlertDialogContent className='flex flex-col gap-5 w-full max-w-96'>
+                                    <AlertDialogContent className='flex flex-col gap-5 w-full max-w-96 max-h-[650px] overflow-y-auto'>
                                         <Image src={order.receipt} alt='Order Receipt' width={300} height={300} className='w-full h-auto' />
                                         <AlertDialogCancel>Close</AlertDialogCancel>
                                     </AlertDialogContent>

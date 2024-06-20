@@ -28,6 +28,10 @@ const ConfirmOrder = ({ orderFormData, formBack, setOpen, clearForm }: ConfirmOr
     const [confirmed, setConfirmed] = useState(false)
     const [showReceipt, setShowReceipt] = useState(false)
 
+    const userOrders = trpc.order.getUserOrders.useQuery(undefined, {
+        refetchOnMount: false
+    })
+
     const { isPending, mutateAsync } = trpc.order.createOrder.useMutation({
         onError: async (err) => {
             await axios.delete('/api/uploadthing', {
@@ -40,9 +44,10 @@ const ConfirmOrder = ({ orderFormData, formBack, setOpen, clearForm }: ConfirmOr
             return toast.error(err.message)
         },
         onSuccess: () => {
+            userOrders.refetch()
             clearForm()
             setOpen(false)
-            return toast.success("Success! order created, refresh page to see changes.")
+            return toast.success("Success! order created.")
         }
     })
 
