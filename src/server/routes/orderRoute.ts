@@ -137,12 +137,12 @@ export const orderRoute = {
             if (!auth) throw new TRPCError({
                 code: 'UNAUTHORIZED'
             })
-            const amount = opts.input.amount * 100
+            const amount = opts.input.amount 
 
             const linkData = {
                 data: {
                     attributes: {
-                        amount,
+                        amount: amount * 100,
                         description: `${amount} Sonic Coin`,
                         remarks: JSON.stringify({
                             amount,
