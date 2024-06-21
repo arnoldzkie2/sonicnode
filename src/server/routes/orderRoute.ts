@@ -4,11 +4,36 @@ import { getAuth } from "@/lib/nextauth";
 import { TRPCError } from "@trpc/server";
 import db from "@/lib/db";
 import { ORDERSTATUS } from "@/constant/status";
-import { apiLimiter } from "@/lib/api";
+import { apiLimiter, paymongoApi } from "@/lib/api";
 import { OrderVerified } from '@/components/emails/order-verified'
 import InvalidOrder from "@/components/emails/order-invalid";
 import { Resend } from "resend";
+import { PaymongoMetaData } from "@/app/api/paymongo/webhook/route";
+
 const resend = new Resend(process.env.RESEND_API_KEY as string)
+
+interface PaymongoLinkType {
+    data: {
+        id: string
+        type: string
+        attributes: {
+            amount: number,
+            archived: boolean,
+            currency: string,
+            description: string,
+            livemode: boolean,
+            fee: number,
+            remarks: string,
+            statu: string,
+            tax_amount: null,
+            checkout_url: string,
+            reference_number: string,
+            created_at: number,
+            updated_at: number,
+        }
+    }
+}
+
 
 export const orderRoute = {
 
@@ -100,83 +125,102 @@ export const orderRoute = {
         }
     }),
     createOrder: publicProcedure.input(z.object({
-        price: z.string(),
-        method: z.string(),
-        currency: z.string(),
-        receipt: z.string()
+        amount: z.number(),
     })).mutation(async (opts) => {
 
         try {
 
-            await apiLimiter.consume(1)
-
-            const { price, method, currency, receipt } = opts.input
-
-            if (!price || !method || !currency || !receipt) throw new TRPCError({
-                code: "BAD_REQUEST",
-                message: "Missing inputs"
-            })
+            await apiLimiter.consume(10)
 
             //authorize user 
             const auth = await getAuth()
             if (!auth) throw new TRPCError({
                 code: 'UNAUTHORIZED'
             })
+            const amount = opts.input.amount * 100
 
-            //retrieve user
-            const user = await db.users.findUnique({
-                where: { id: auth.user.id }, include: {
-                    orders: true
-                }
-            })
-            if (!user) throw new TRPCError({
-                code: "NOT_FOUND",
-                message: "User not found"
-            })
-
-            //check if user has pending orders or has 5 invalid orders
-            if (user.orders.some(order => order.status === ORDERSTATUS['pending'])) {
-                //delete the image in uploadthing
-
-                //throw an error
-                throw new TRPCError({
-                    code: "BAD_REQUEST",
-                    message: "You cannot create more than 1 pending orders"
-                });
-            }
-
-            const invalidOrdersCount = user.orders.filter(order => order.status === ORDERSTATUS['invalid']).length;
-            if (invalidOrdersCount >= 5) {
-                //delete the image in uploadthing
-
-
-                //throw an error
-                throw new TRPCError({
-                    code: "BAD_REQUEST",
-                    message: "You cannot have more than 5 invalid orders"
-                });
-            }
-
-            //create the order
-            const createOrder = await db.users_orders.create({
+            const linkData = {
                 data: {
-                    price, method, currency, receipt,
-                    status: ORDERSTATUS['pending'],
-                    amount: 'pending',
-                    note: "Once we verify your order, you will receive an email notification and your Sonic Coin will be added to your account.",
-                    user: {
-                        connect: {
-                            id: user.id
-                        }
+                    attributes: {
+                        amount,
+                        description: `${amount} Sonic Coin`,
+                        remarks: JSON.stringify({
+                            amount,
+                            userID: auth.user.id,
+                            webhookSecret: process.env.PAYMONGO_WEBHOOK_SECRET
+                        })
                     }
                 }
-            })
-            if (!createOrder) throw new TRPCError({
-                code: "BAD_REQUEST",
-                message: "Failed to create order"
-            })
+            }
 
-            return true
+            const { data }: { data: PaymongoLinkType } = await paymongoApi.post('/links', linkData)
+
+            if (data) return data.data.attributes.checkout_url
+
+            throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: "Failed to create order link"
+            })
+            // const { price, method, currency, receipt } = opts.input
+
+            // if (!price || !method || !currency || !receipt) throw new TRPCError({
+            //     code: "BAD_REQUEST",
+            //     message: "Missing inputs"
+            // })
+
+
+            // //retrieve user
+            // const user = await db.users.findUnique({
+            //     where: { id: auth.user.id }, include: {
+            //         orders: true
+            //     }
+            // })
+            // if (!user) throw new TRPCError({
+            //     code: "NOT_FOUND",
+            //     message: "User not found"
+            // })
+
+            // //check if user has pending orders or has 5 invalid orders
+            // if (user.orders.some(order => order.status === ORDERSTATUS['pending'])) {
+            //     //delete the image in uploadthing
+
+            //     //throw an error
+            //     throw new TRPCError({
+            //         code: "BAD_REQUEST",
+            //         message: "You cannot create more than 1 pending orders"
+            //     });
+            // }
+
+            // const invalidOrdersCount = user.orders.filter(order => order.status === ORDERSTATUS['invalid']).length;
+            // if (invalidOrdersCount >= 5) {
+            //     //delete the image in uploadthing
+
+
+            //     //throw an error
+            //     throw new TRPCError({
+            //         code: "BAD_REQUEST",
+            //         message: "You cannot have more than 5 invalid orders"
+            //     });
+            // }
+
+            // //create the order
+            // const createOrder = await db.users_orders.create({
+            //     data: {
+            //         price, method, currency, receipt,
+            //         status: ORDERSTATUS['pending'],
+            //         amount: 'pending',
+            //         note: "Once we verify your order, you will receive an email notification and your Sonic Coin will be added to your account.",
+            //         user: {
+            //             connect: {
+            //                 id: user.id
+            //             }
+            //         }
+            //     }
+            // })
+            // if (!createOrder) throw new TRPCError({
+            //     code: "BAD_REQUEST",
+            //     message: "Failed to create order"
+            // })
 
         } catch (error: any) {
             console.error(error);

@@ -86,12 +86,12 @@ const ConfirmOrder = ({ orderFormData, formBack, setOpen, clearForm }: ConfirmOr
                     <Button onClick={async (e: React.MouseEvent) => {
                         e.preventDefault()
                         if (!confirmed) return toast.error("Please confirm if the information provided is correct.")
-                        await mutateAsync({
-                            receipt: orderFormData.receipt,
-                            price: orderFormData.price,
-                            currency: orderFormData.currency,
-                            method: orderFormData.method
-                        })
+                        // await mutateAsync({
+                        //     receipt: orderFormData.receipt,
+                        //     price: orderFormData.price,
+                        //     currency: orderFormData.currency,
+                        //     method: orderFormData.method
+                        // })
                     }} disabled={isPending} className='w-full'>{isPending ? <LoaderCircle size={20} className='animate-spin' /> : "Create Order"}</Button>
                 </div>
             </div>

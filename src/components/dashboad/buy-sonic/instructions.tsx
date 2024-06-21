@@ -22,25 +22,25 @@ const Instructions = ({ acceptInstruction, setAcceptInstruction }: {
                 </div>
                 <ol className='list-decimal list-inside ml-4 space-y-2 pt-2'>
                     <li>
-                        <span className='mr-1.5 text-sm'>Payment Methods:</span>
+                        <span className='mr-1.5 text-sm'>Enter Amount:</span>
                         <small className='text-muted-foreground'>
-                            Choose your preferred payment method, enter the amount, and select the currency before proceeding with the payment.
+                            Enter how much sonic coin you will buy, ₱1 = 1 Sonic Coin.
                         </small>
                     </li>
                     <li>
-                        <span className='mr-1.5 text-sm'>Scan QR Code</span>
+                        <span className='mr-1.5 text-sm'>Proceed to Checkout:</span>
                         <small className='text-muted-foreground'>
-                            Scan the provided QR code using your payment app to initiate the payment process.
+                            After entering the amount, click 'Buy' to be redirected to the checkout page where you can complete your payment.
                         </small>
                     </li>
                     <li>
                         <span className='mr-1.5 text-sm'>Payment Verification:</span>
                         <small className='text-muted-foreground'>
-                            After the payment is completed, take a screenshot of the payment receipt immediately. This receipt must clearly show the transaction details.
+                            Your payment will be verified automatically. Your Sonic Coins will be credited once the payment is successfully processed.
                         </small>
                     </li>
                 </ol>
-                <div className='flex flex-col mt-5'>
+                {/* <div className='flex flex-col mt-5'>
                     <Label className='text-lg'>Forgot to Take a Screenshot?</Label>
                     <small className='text-muted-foreground'>
                         If you forget to take a screenshot of your receipt, you can contact us at <span className='underline text-foreground'>support@sonicnode.xyz</span> to verify the order. Please provide the following information:</small>
@@ -74,14 +74,13 @@ const Instructions = ({ acceptInstruction, setAcceptInstruction }: {
                 <div className='mt-5 flex flex-col'>
                     <Label className='text-lg'>Important Notes</Label>
                     <small className='text-muted-foreground'>Please ensure that all the information provided is accurate to avoid delays in the verification process. Once your payment is verified, your Sonic Coins will be credited to your account, and you can proceed to purchase a server.</small>
-                </div>
+                </div> */}
                 <div className='flex items-center pt-3 border-t mt-3 gap-2'>
                     <Checkbox checked={acceptInstruction} onCheckedChange={() => setAcceptInstruction(prev => !prev)} className='h-5 w-5' />
                     <Label>
                         I've carefully reviewed the instructions
                     </Label>
                 </div>
-                <small className='text-muted-foreground'>Please make sure you read the instructions</small>
             </div>
         </>
     )

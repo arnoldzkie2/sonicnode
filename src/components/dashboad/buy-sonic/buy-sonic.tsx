@@ -4,9 +4,6 @@ import { AlertDialog, AlertDialogContent, AlertDialogTrigger } from '@/component
 import { Button } from '@/components/ui/button'
 import React, { useState } from 'react'
 import EnterAmount from './enter-amount'
-import ScanQr from './scan-qr'
-import ConfirmOrder from './confirm-order'
-import axios from 'axios'
 import Instructions from './instructions'
 
 const BuySonic = () => {
@@ -14,11 +11,8 @@ const BuySonic = () => {
     const [open, setOpen] = useState(false)
     const [orderFormData, setOrderFormData] = useState({
         amount: '',
-        method: '',
         status: 1,
-        price: '',
-        currency: 'USD',
-        receipt: '',
+
     })
     const [acceptInstruction, setAcceptInstruction] = useState(false)
 
@@ -28,24 +22,24 @@ const BuySonic = () => {
     }
 
     const clearForm = () => {
-        setOrderFormData({ amount: '', method: '', price: '', status: 1, receipt: '', currency: 'USD' })
+        setOrderFormData({ amount: '', status: 1 })
     }
 
     const closeOrder = () => {
         clearForm()
         setOpen(false)
-        if (orderFormData.receipt) {
-            axios.delete('/api/uploadthing', {
-                data: {
-                    url: orderFormData.receipt
-                }
-            })
-        }
+        // if (orderFormData.receipt) {
+        //     axios.delete('/api/uploadthing', {
+        //         data: {
+        //             url: orderFormData.receipt
+        //         }
+        //     })
+        // }
     }
 
-    const formBack = () => {
-        setOrderFormData(prev => ({ ...prev, status: prev.status - 1 }))
-    }
+    // const formBack = () => {
+    //     setOrderFormData(prev => ({ ...prev, status: prev.status - 1 }))
+    // }
 
     return (
         <AlertDialog open={open} onOpenChange={setOpen}>
@@ -58,23 +52,9 @@ const BuySonic = () => {
                         {orderFormData.status === 1 &&
                             <EnterAmount handleFormData={handleFormData}
                                 orderFormData={orderFormData}
+                                setOpen={setOpen}
                                 closeOrder={closeOrder}
                                 setOrderFormData={setOrderFormData}
-                            />
-                        }
-                        {orderFormData.status === 2 &&
-                            <ScanQr
-                                orderFormData={orderFormData}
-                                formBack={formBack}
-                                setOrderFormData={setOrderFormData}
-                            />
-                        }
-                        {orderFormData.status === 3 &&
-                            <ConfirmOrder
-                                orderFormData={orderFormData}
-                                formBack={formBack}
-                                setOpen={setOpen}
-                                clearForm={clearForm}
                             />
                         }
                     </>
