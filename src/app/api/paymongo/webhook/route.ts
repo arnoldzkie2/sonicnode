@@ -19,7 +19,7 @@ export const POST = async (req: NextRequest) => {
         const data = await req.json()
 
         //compare the webhook secret
-        const metadata = await JSON.parse(data.data.attributes.attributes.remarks) as PaymongoMetaData
+        const metadata = await JSON.parse(data.data.attributes.data.attributes.remarks) as PaymongoMetaData
 
         if (metadata.webhookSecret !== process.env.PAYMONGO_WEBHOOK_SECRET) return NextResponse.json({ msg: "Webhook is not matched" }, { status: 400 })
 
