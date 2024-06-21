@@ -76,6 +76,7 @@ const Contact = () => {
                     ))}
                 </div>
             </div>
+            <ReCAPTCHA size='invisible' ref={recaptchaRef} sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT as string} />
             <Card className='w-full sm:block hidden lg:w-1/2'>
                 <CardHeader>
                     <CardTitle className='text-xl'>Contact Us</CardTitle>
@@ -128,7 +129,6 @@ const Contact = () => {
                 <Button className='mt-1' disabled={loading}>
                     {loading ? <FontAwesomeIcon icon={faSpinner} width={16} height={16} className='animate-spin' /> : 'Send'}
                 </Button>
-                <ReCAPTCHA size='invisible' ref={recaptchaRef} sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT as string} />
             </form>
         </div>
     )

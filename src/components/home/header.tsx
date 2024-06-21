@@ -18,7 +18,7 @@ const Header = () => {
       <ModeToggle />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button>
+          <Button className='px-3'>
             <Menu className='cursor-pointer' />
           </Button>
         </DropdownMenuTrigger>

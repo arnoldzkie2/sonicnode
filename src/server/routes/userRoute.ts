@@ -101,33 +101,6 @@ export const userRoute = {
         }
     }),
     test: publicProcedure.query(async () => {
-
-        const newInfo: SonicInfo = {
-            next_billing: new Date().toJSON(),
-            renewal: 300,
-            deletion_countdown: 5,
-            node_points: 1
-        }
-
-        // const data = await db.servers.findMany({
-        //     where: {
-        //         sonic_info: {
-        //             not: null
-        //         }
-        //     }
-        // })
-
-        const data = await db.servers.updateMany({
-            where: {
-                sonic_info: {
-                    not: null
-                }
-            },
-            data: {
-                sonic_info: JSON.stringify(newInfo)
-            }
-        })
-
-        return data
+        return true
     })
 }
