@@ -12,14 +12,10 @@ const Instructions = ({ acceptInstruction, setAcceptInstruction }: {
             <div className='flex flex-col gap-2 border-b pb-2'>
                 <h1 className='text-2xl'>Sonic Purchase Instructions</h1>
                 <small className='text-muted-foreground text-sm'>
-                    Follow these instructions to ensure a smooth transaction.
+                    Follow these steps to complete your purchase
                 </small>
             </div>
             <div>
-                <div className='flex flex-col'>
-                    <Label className='text-lg'>Purchasing Sonic Coins</Label>
-                    <small className='text-muted-foreground'>Follow these steps to complete your purchase:</small>
-                </div>
                 <ol className='list-decimal list-inside ml-4 space-y-2 pt-2'>
                     <li>
                         <span className='mr-1.5 text-sm'>Enter Amount:</span>
@@ -36,7 +32,7 @@ const Instructions = ({ acceptInstruction, setAcceptInstruction }: {
                     <li>
                         <span className='mr-1.5 text-sm'>Payment Verification:</span>
                         <small className='text-muted-foreground'>
-                            Your payment will be verified automatically. Your Sonic Coins will be credited once the payment is successfully processed.
+                            Your payment will be verified automatically. Your Sonic Coins will be credited in a minute once the payment is successfully processed.
                         </small>
                     </li>
                 </ol>

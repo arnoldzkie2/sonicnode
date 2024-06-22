@@ -5,6 +5,7 @@ import { apiLimiter, sonicApi } from "@/lib/api";
 import db from "@/lib/db";
 import axios from "axios";
 import { SonicInfo } from "./serverRoute";
+import { getAuth } from "@/lib/nextauth";
 
 export const userRoute = {
     registerUser: publicProcedure.input(z.object({
@@ -100,7 +101,40 @@ export const userRoute = {
             await db.$disconnect()
         }
     }),
+    checkFreeTrialClaimed: publicProcedure.query(async () => {
+        try {
+
+            const auth = await getAuth()
+            if (!auth) throw new TRPCError({
+                code: 'UNAUTHORIZED'
+            })
+
+            const user = await db.users.findUnique({ where: { id: auth.user.id }, select: { trial_claimed: true } })
+            if (!user) throw new TRPCError({
+                code: "NOT_FOUND",
+                message: "User not found"
+            })
+
+            return user.trial_claimed
+
+        } catch (error: any) {
+            console.error(error);
+            throw new TRPCError({
+                code: error.code,
+                message: error.message
+            })
+        } finally {
+            await db.$disconnect()
+        }
+
+    }),
     test: publicProcedure.query(async () => {
+        await db.server_plans.update({ where: { id: 1 }, data: { price: 169 } })
+        await db.server_plans.update({ where: { id: 2 }, data: { price: 269 } })
+        await db.server_plans.update({ where: { id: 3 }, data: { price: 369 } })
+        await db.server_plans.update({ where: { id: 4 }, data: { price: 529 } })
+        await db.server_plans.update({ where: { id: 5 }, data: { price: 729 } })
+
         return true
     })
 }

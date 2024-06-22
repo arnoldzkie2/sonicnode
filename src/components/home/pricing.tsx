@@ -70,9 +70,11 @@ const Pricing = async () => {
                                     <div className='text-foreground flex items-center font-[1000] border-b-2 border-yellow-400 text-2xl'>
                                         <ReturnToolTip
                                             trigger={
-                                                <Image src="/logo.svg" width={25} height={25} alt='Sonic Coin' className='mr-1.5' />
+                                                <div>
+                                                    ₱
+                                                </div>
                                             }
-                                            content='Sonic Coin $1 = 100 Sonic Coins'
+                                            content='Sonic Coin ₱1 = 1 Sonic Coin'
                                         />
                                         {plans.price}/<span className='text-sm pt-1.5 text-muted-foreground'>30D</span>
                                     </div>

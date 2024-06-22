@@ -2,16 +2,17 @@ import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
 import ReturnToolTip from '../ui/return-tooltip'
 import Image from 'next/image'
-import { Cpu, GitFork, HardDrive, Users } from 'lucide-react'
+import { Cpu, GitFork, HardDrive, ShoppingCart, Users } from 'lucide-react'
 import { Label } from '../ui/label'
 import CreateServer from './create-server'
 import { caller } from '@/app/_trpc/server'
+import { Button } from '../ui/button'
 
 const ServerPlans = async ({ eggs }: {
   eggs: {
     name: string,
     id: number
-  }[] | undefined
+  }[]
 }) => {
 
   const plans = await caller.server_plans.getAll()
@@ -75,13 +76,19 @@ const ServerPlans = async ({ eggs }: {
                       trigger={
                         <Image src="/logo.svg" width={25} height={25} alt='Sonic Coin' className='mr-1.5' />
                       }
-                      content='Sonic Coin $1 = 100 Sonic Coins'
+                      content='Sonic Coin ₱1 = 1 Sonic Coin'
                     />
                     {plan.price}/<span className='text-sm pt-1.5 text-muted-foreground'>30D</span>
                   </div>
                 </div>
                 <CreateServer
                   eggs={eggs}
+                  trial={false}
+                  trigger={
+                    <Button className='rounded-full w-[55px] h-[55px] bg-muted text-foreground hover:text-white'>
+                      <ShoppingCart size={25} />
+                    </Button>
+                  }
                   planID={plan.id}
                 />
               </div>

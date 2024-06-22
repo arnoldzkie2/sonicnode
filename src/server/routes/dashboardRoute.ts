@@ -58,7 +58,7 @@ export const dashboadRoute = {
 
                 return total
             }, 0)
-            
+
             const modifyOrders = user.orders.map(order => ({
                 ...order,
                 created_at: order.created_at.toJSON(),
@@ -67,6 +67,7 @@ export const dashboadRoute = {
 
             const dashboardData = {
                 credits: user.sonic_coin,
+                trial_claimed: user.trial_claimed,
                 servers: user.servers,
                 orders: modifyOrders,
                 eggs, totalMonthlyBilling

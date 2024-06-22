@@ -533,5 +533,220 @@ export const serverRoute = {
         } finally {
             await db.$disconnect()
         }
-    })
+    }),
+    createFreeTrialServer: publicProcedure.input(z.object({
+        name: z.string(),
+        description: z.string().optional(),
+        egg: z.number()
+    })).mutation(async (opts) => {
+
+        try {
+
+            await apiLimiter.consume(1)
+
+            const { name, egg, description } = opts.input
+
+            if (!name) throw new TRPCError({
+                code: "NOT_FOUND",
+                message: "Server name is required"
+            })
+            if (!egg) throw new TRPCError({
+                code: "NOT_FOUND",
+                message: "Server Type is required"
+            })
+            const auth = await getAuth()
+            if (!auth) throw new TRPCError({
+                code: 'UNAUTHORIZED'
+            })
+            const user = await db.users.findUnique({ where: { id: auth.user.id } })
+            if (!user) throw new TRPCError({
+                code: 'NOT_FOUND',
+                message: "User does not exist"
+            })
+
+            //get the free trial plan
+            const selectedPlan = await db.server_plans.findFirst({ where: { id: 1 } })
+            if (!selectedPlan) throw new TRPCError({
+                code: "NOT_FOUND",
+                message: "Plan does not exist"
+            })
+
+            //select all nodes that matched the selected plan
+            const selectedNodes = await db.nodes.findMany({
+                where: { name: selectedPlan.node }
+            })
+            if (selectedNodes.length === 0) throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: "No available node for free trial please try again tomorrow."
+            })
+
+            //if there is available node with that name proceed
+            const availableNode = selectedNodes.filter(node => {
+
+                const nodeDescription: NodeDescription = JSON.parse(node.description as string)
+
+                const { remainingPoints, maxPoints, totalPoints } = nodeDescription
+                const requiredPoints = selectedPlan.points
+
+                // Check if remainingPoints meets requirement
+                if ((remainingPoints >= requiredPoints) && (totalPoints < maxPoints)) {
+                    return true; // Node qualifies based on conditions
+                } else {
+                    return false; // Node does not qualify
+                }
+            })
+            if (availableNode.length === 0) throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: "No available node for free trial please try again tomorrow."
+            })
+
+            //get the first selected node
+            const selectedNode = availableNode[0]
+
+            //get all the node allocations
+            const allocations = await sonicApi.get(`/nodes/${selectedNode.id}/allocations`)
+
+            //throw an error of node doesn't have available ports
+            if (allocations.data.data.length === 0) throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: "Node doesn't have available ports please contact our support team."
+            })
+
+            //get 1 unassigned allocation
+            const unassignedAllocation = allocations.data.data.find((allocation: any) => !allocation.attributes.assigned);
+
+            //throw an error of node doesn't have available ports
+            if (!unassignedAllocation) throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: "Node doesn't have available ports please contact our support team."
+            })
+
+            const checkEgg = await db.eggs.findUnique({
+                where: { id: opts.input.egg }, include: {
+                    egg_variables: true
+                }
+            })
+            if (!checkEgg) throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: "Server type does not exist"
+            })
+
+            // VARIABLES
+            //this is the variables we'll use to create the server
+            const dockerImages = Object.values(checkEgg.docker_images as string)
+            const eggEnvironment = checkEgg.egg_variables.reduce((acc: any, variable) => {
+                acc[variable.env_variable] = variable.default_value;
+                return acc;
+            }, {})
+
+            const selectedImage = Object.values(dockerImages)[0] as string
+            const defaultPortID = unassignedAllocation.attributes.id
+            const resources = {
+                memory: selectedPlan.ram,
+                cpu: selectedPlan.cpu,
+                swap: -1,
+                disk: selectedPlan.disk * 1000,
+                io: 500
+            }
+            const featureLimits = {
+                databases: 1,
+                allocations: 5,
+                backups: 2
+            }
+
+            //make an api call to create the server 
+            const { data } = await sonicApi.post('/servers', {
+                name: opts.input.name,
+                user: user.id,
+                description,
+                nest: checkEgg.nest_id,
+                egg: checkEgg.id,
+                docker_image: selectedImage,
+                startup: checkEgg.startup,
+                environment: {
+                    ...eggEnvironment,
+                    STARTUP: checkEgg.startup
+                },
+                limits: resources,
+                feature_limits: featureLimits,
+                allocation: {
+                    default: defaultPortID
+                }
+            })
+
+            if (!data) throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: "Something went wrong when creating a server"
+            })
+
+            //if the server successfully created update the usercredits,server renewal cost, node points
+            // Get the current date
+            const currentDate = new Date();
+
+            // Function to add 3 days to the current date
+            const getNextBillingDate = (date: Date) => {
+                let nextBillingDate = new Date(date);
+                nextBillingDate.setDate(nextBillingDate.getDate() + 3);
+                return nextBillingDate;
+            }
+            const nextBillingDate = getNextBillingDate(currentDate);
+
+            //put this in sonic_info so we can parse it later and get additional information
+            const sonicInfo: SonicInfo = {
+                next_billing: nextBillingDate.toJSON(),
+                renewal: selectedPlan.price,
+                node_points: selectedPlan.points,
+                deletion_countdown: 0
+            }
+
+            //get the node points details
+            const nodePoints: NodeDescription = JSON.parse(selectedNode.description as string)
+            const { remainingPoints, totalPoints, maxPoints } = nodePoints
+
+            //update the node points
+            const newNodePoints = JSON.stringify({
+                maxPoints,
+                totalPoints: totalPoints + selectedPlan.points,
+                remainingPoints: remainingPoints - selectedPlan.points
+            })
+
+            //update user credits,serverinfo,node points
+            const [updateUserInfo, updateServerInfo, updateNodePoints] = await Promise.all([
+                db.users.update({ where: { id: user.id }, data: { trial_claimed: true } }),
+                db.servers.update({
+                    where: { id: data.attributes.id as number },
+                    data: {
+                        sonic_info: JSON.stringify(sonicInfo)
+                    }
+                }),
+                db.nodes.update({
+                    where: { id: selectedNode.id },
+                    data: { description: newNodePoints }
+                })
+            ])
+            if (!updateUserInfo) throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: "Failed to update user info"
+            })
+            if (!updateServerInfo) throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: "Failed to deduct user credit"
+            })
+            if (!updateNodePoints) throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: " Failed to update node new points"
+            })
+
+            return true
+
+        } catch (error: any) {
+            console.error(error);
+            throw new TRPCError({
+                code: error.code,
+                message: error.message
+            })
+        } finally {
+            await db.$disconnect()
+        }
+    }),
 }

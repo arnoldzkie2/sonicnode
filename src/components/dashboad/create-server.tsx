@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../ui/alert-dialog'
 import { Button } from '../ui/button'
-import { LoaderCircle, ShoppingCart } from 'lucide-react'
+import { LoaderCircle } from 'lucide-react'
 import { Label } from '../ui/label'
 import { Input } from '../ui/input'
 import { Separator } from '../ui/separator'
@@ -10,12 +10,14 @@ import { trpc } from '@/app/_trpc/client'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { toast } from 'sonner'
 
-const CreateServer = ({ eggs, planID }: {
+const CreateServer = ({ eggs, planID, trigger, trial }: {
     eggs: {
         name: string
         id: number
-    }[] | undefined
+    }[]
     planID: number
+    trigger: any
+    trial: boolean
 }) => {
 
     const [open, setOpen] = useState(false)
@@ -29,6 +31,39 @@ const CreateServer = ({ eggs, planID }: {
 
     const userServers = trpc.server.getUserServers.useQuery(undefined, {
         refetchOnMount: false,
+    })
+    const trialClaimed = trpc.user.checkFreeTrialClaimed.useQuery(undefined, {
+        initialData: false,
+        refetchOnMount: false
+    })
+
+
+    const createFreeTrial = trpc.server.createFreeTrialServer.useMutation({
+        onError: (err) => {
+            toast.error(err.message, {
+                position: 'bottom-center'
+            })
+        },
+        onSuccess: async () => {
+            await Promise.all([
+                trialClaimed.refetch(),
+                userServers.refetch()
+            ])
+            toast.success("Success! server created.", {
+                position: 'bottom-center'
+            })
+            setOpen(false)
+            // Function to refetch 10 times every 10 seconds
+            let refetchCount = 0;
+            const intervalId = setInterval(() => {
+                if (refetchCount < 6) {
+                    userServers.refetch();
+                    refetchCount++;
+                } else {
+                    clearInterval(intervalId);
+                }
+            }, 10000); // 10000 milliseconds = 10 seconds
+        }
     })
 
     const createServer = trpc.server.createServer.useMutation({
@@ -63,9 +98,7 @@ const CreateServer = ({ eggs, planID }: {
                 ...prev,
                 planID
             }))}>
-                <Button className='rounded-full w-[55px] h-[55px] bg-muted text-foreground hover:text-white'>
-                    <ShoppingCart size={25} />
-                </Button>
+                {trigger}
             </AlertDialogTrigger>
             <AlertDialogContent className='w-full max-w-96'>
                 <AlertDialogHeader>
@@ -78,7 +111,11 @@ const CreateServer = ({ eggs, planID }: {
                 <form className='flex flex-col space-y-4' onSubmit={async (e) => {
                     e.preventDefault()
                     const data = { ...serverFormData, egg: Number(serverFormData.egg) }
-                    await createServer.mutateAsync(data)
+                    if (trial) {
+                        await createFreeTrial.mutateAsync(data)
+                    } else {
+                        await createServer.mutateAsync(data)
+                    }
                 }}>
                     <div className='flex flex-col space-y-3'>
                         <Label>Server Type</Label>
@@ -106,9 +143,19 @@ const CreateServer = ({ eggs, planID }: {
 
                     <div className='flex items-center gap-5 w-full pt-4'>
                         <Button onClick={() => setOpen(false)} variant={'ghost'} type='button' className='w-full'>Close</Button>
-                        <Button disabled={createServer.isPending} className='w-full'>{
-                            createServer.isPending ? <LoaderCircle size={16} className='animate-spin' /> : 'Create'
-                        }</Button>
+                        {!trial ?
+                            <Button disabled={createServer.isPending} className='w-full'>
+                                {
+                                    createServer.isPending ? <LoaderCircle size={16} className='animate-spin' /> : 'Create'
+                                }
+                            </Button>
+                            :
+                            <Button disabled={createFreeTrial.isPending} className='w-full'>
+                                {
+                                    createFreeTrial.isPending ? <LoaderCircle size={16} className='animate-spin' /> : 'Create'
+                                }
+                            </Button>
+                        }
                     </div>
                 </form>
             </AlertDialogContent>

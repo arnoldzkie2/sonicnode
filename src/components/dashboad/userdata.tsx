@@ -1,25 +1,33 @@
 'use client'
 import { caller } from '@/app/_trpc/server'
 import React from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { Label } from '../ui/label'
 import Link from 'next/link'
 import { Button } from '../ui/button'
-import { Cpu, HardDrive, LoaderCircle, LogIn, MemoryStick } from 'lucide-react'
+import { Cpu, Gift, HardDrive, LoaderCircle, MemoryStick, Settings } from 'lucide-react'
 import ReturnToolTip from '../ui/return-tooltip'
 import Image from 'next/image'
 import { SonicInfo } from '@/server/routes/serverRoute'
 import RenewServer from './renew-server'
 import { trpc } from '@/app/_trpc/client'
+import UserCredits from './user-credits'
+import { Separator } from '../ui/separator'
+import CreateServer from './create-server'
 
 interface Props {
     initialData: Awaited<ReturnType<(typeof caller['dashboard']['getDashboardData'])>>
 }
 
-const UserServers = ({ initialData }: Props) => {
+const UserData = ({ initialData }: Props) => {
 
     const { data } = trpc.server.getUserServers.useQuery(undefined, {
         initialData: initialData.servers,
+        refetchOnMount: false
+    })
+
+    const trialClaimed = trpc.user.checkFreeTrialClaimed.useQuery(undefined, {
+        initialData: initialData.trial_claimed,
         refetchOnMount: false
     })
 
@@ -28,13 +36,13 @@ const UserServers = ({ initialData }: Props) => {
         switch (status) {
             case "installing":
                 return (
-                    <Button className='h-8 w-24 p-0'>
+                    <Button className='h-8 w-20 p-0'>
                         <LoaderCircle size={16} className='animate-spin' />
                     </Button>
                 )
             case "suspended":
                 return (
-                    <Button className='h-8 w-24' variant={'destructive'}>
+                    <Button className='h-8 w-20' variant={'destructive'}>
                         Suspended
                     </Button>
                 )
@@ -46,17 +54,31 @@ const UserServers = ({ initialData }: Props) => {
     }
 
     return (
-        <div className='flex pt-5 pb-10 flex-col gap-2 w-full max-w-[500px]'>
-            <div className='border-b pb-3 mb-3 flex items-center gap-5 w-full justify-between'>
-                <Label className='text-base'>{"Total: "} {data.length}</Label>
+        <div className='flex flex-col w-full max-w-[500px]'>
+            {!trialClaimed.data &&
+                <div className='py-5 w-full space-y-2 border-b'>
+                    <Label className='text-primary text-lg'>Free Trial (3Days)</Label>
+                    <p className='text-muted-foreground text-sm'>Try our coal plan free for 3 days. No payment needed.</p>
+                    <CreateServer
+                        eggs={initialData.eggs}
+                        planID={1}
+                        trial={true}
+                        trigger={
+                            <Button className='w-full'>CLAIM FREE TRIAL<Gift size={16} className='animate-bounce ml-2' /></Button>
+                        } />
+                </div>}
+            <UserCredits initialData={initialData} />
+            <Separator />
+            <div className='flex items-center py-5 gap-5 w-full justify-between'>
+                <Label className='text-lg font-black'>Servers</Label>
                 <Link href={process.env.NEXT_PUBLIC_APP_URL as string || '/'}>
                     <Button className='flex items-center gap-2'>
-                        <div>Panel</div>
-                        <LogIn size={16} />
+                        <div>Manage</div>
+                        <Settings size={16} />
                     </Button>
                 </Link>
             </div>
-            <div className='flex flex-wrap w-full gap-5'>
+            <div className='flex flex-wrap w-full gap-4'>
                 {
                     data.length > 0 ? data.map((server, i) => {
                         const sonicInfo: SonicInfo = JSON.parse(server.sonic_info || "{}")
@@ -126,4 +148,4 @@ const UserServers = ({ initialData }: Props) => {
     )
 }
 
-export default UserServers
+export default UserData

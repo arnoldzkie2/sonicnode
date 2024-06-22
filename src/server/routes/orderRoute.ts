@@ -8,7 +8,6 @@ import { apiLimiter, paymongoApi } from "@/lib/api";
 import { OrderVerified } from '@/components/emails/order-verified'
 import InvalidOrder from "@/components/emails/order-invalid";
 import { Resend } from "resend";
-import { PaymongoMetaData } from "@/app/api/paymongo/webhook/route";
 
 const resend = new Resend(process.env.RESEND_API_KEY as string)
 

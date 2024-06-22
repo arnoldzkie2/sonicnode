@@ -13,7 +13,7 @@ export const POST = async (req: NextRequest) => {
     try {
 
         const signature = req.headers.get("paymongo-signature")
-        if (!signature) return NextResponse.json({ msg: "Signature not found" }, { status: 404 })
+        if (!signature) return NextResponse.json({ msg: "Signature not found" }, { status: 200 })
         //verify the signature
 
         const data = await req.json()
@@ -21,7 +21,7 @@ export const POST = async (req: NextRequest) => {
         //compare the webhook secret
         const metadata = await JSON.parse(data.data.attributes.data.attributes.remarks) as PaymongoMetaData
 
-        if (metadata.webhookSecret !== process.env.PAYMONGO_WEBHOOK_SECRET) return NextResponse.json({ msg: "Webhook is not matched" }, { status: 400 })
+        if (metadata.webhookSecret !== process.env.PAYMONGO_WEBHOOK_SECRET) return NextResponse.json({ msg: "Webhook is not matched" }, { status: 200 })
 
         //get the user
         const user = await db.users.findUnique({ where: { id: metadata.userID } })

@@ -22,9 +22,9 @@ const Contact = () => {
         message: ''
     })
     const recaptchaRef: any = React.createRef();
+    const verifyRecaptcha = trpc.user.verifyRecaptcha.useMutation()
     const { loading, setLoading } = useAuthStore()
 
-    const verifyRecaptcha = trpc.user.verifyRecaptcha.useMutation()
     const { mutateAsync } = trpc.contact.send.useMutation({
         onError: (err) => toast.error(err.message),
         onSuccess: () => {
@@ -41,7 +41,6 @@ const Contact = () => {
         setLoading(true)
         await verifyRecaptcha.mutateAsync(recaptchaValue)
             .then(async () => {
-                setLoading(false)
                 await mutateAsync(formData)
             })
             .catch(err => {
@@ -57,7 +56,7 @@ const Contact = () => {
 
     return (
 
-        <div className='flex items-center w-full flex-col gap-10 lg:flex-row lg:h-screen lg:justify-between' id='contact'  >
+        <div className='flex items-center w-full flex-col gap-5 lg:flex-row lg:h-screen lg:justify-between' id='contact'  >
             <div className='flex flex-col gap-4 lg:w-1/3'>
                 <h2 className='text-primary text-xl'>Contact Us</h2>
                 <h1 className='text-3xl lg:text-4xl font-black'>Send Us Your Thoughts</h1>

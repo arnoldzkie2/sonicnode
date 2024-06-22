@@ -1,6 +1,6 @@
 const FEATURES = [
     'Dedicated Server Resources',
-    'Low Latency (20-70ms in Asia)',
+    'Low Latency (20-70ms',
     '5 Dedicated Ports',
     '24/7 Online (99% Uptime)',
     'CPU: AMD EPYC 7282 (2.8 - 3.2GHz)',
