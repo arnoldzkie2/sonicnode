@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { Label } from '../ui/label'
 import Link from 'next/link'
 import { Button } from '../ui/button'
-import { Cpu, Gift, HardDrive, LoaderCircle, MemoryStick, Settings } from 'lucide-react'
+import { Cpu, Gift, HardDrive, LoaderCircle, MemoryStick, Settings, Settings2 } from 'lucide-react'
 import ReturnToolTip from '../ui/return-tooltip'
 import Image from 'next/image'
 import { SonicInfo } from '@/server/routes/serverRoute'
@@ -70,11 +70,10 @@ const UserData = ({ initialData }: Props) => {
             <UserCredits initialData={initialData} />
             <Separator />
             <div className='flex items-center py-5 gap-5 w-full justify-between'>
-                <Label className='text-lg font-black'>Servers</Label>
                 <Link href={process.env.NEXT_PUBLIC_APP_URL as string || '/'}>
-                    <Button className='flex items-center gap-2'>
-                        <div>Manage</div>
-                        <Settings size={16} />
+                    <Button className='flex items-center gap-2 text-foreground' variant={'secondary'}>
+                        <div>Manage Server</div>
+                        <Settings2 size={16} />
                     </Button>
                 </Link>
             </div>
@@ -140,7 +139,7 @@ const UserData = ({ initialData }: Props) => {
                         )
                     }
                     ) : <div className='flex flex-col text-center pt-10 items-center w-full gap-5'>
-                        <h1 className='text-xl font-black'>{"Look's like you don't have a server"}</h1>
+                        <h1 className='text-lg'>{"Look's like you don't have a server"}</h1>
                     </div>
                 }
             </div>

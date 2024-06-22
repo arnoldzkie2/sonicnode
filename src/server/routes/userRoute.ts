@@ -129,11 +129,8 @@ export const userRoute = {
 
     }),
     test: publicProcedure.query(async () => {
-        await db.server_plans.update({ where: { id: 1 }, data: { price: 169 } })
-        await db.server_plans.update({ where: { id: 2 }, data: { price: 269 } })
-        await db.server_plans.update({ where: { id: 3 }, data: { price: 369 } })
-        await db.server_plans.update({ where: { id: 4 }, data: { price: 529 } })
-        await db.server_plans.update({ where: { id: 5 }, data: { price: 729 } })
+        await db.server_plans.update({ where: { id: 4 }, data: { price: 539 } })
+        await db.server_plans.update({ where: { id: 5 }, data: { price: 739 } })
 
         return true
     })
