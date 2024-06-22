@@ -7,10 +7,18 @@ import { Toaster } from "@/components/ui/sonner"
 import Adsense from "@/components/Adsense";
 
 export const metadata: Metadata = {
-  title: "Sonic Node",
+  title: "SonicNode - Minecraft Server Hosting",
   icons: '/logo.svg',
-  description: "A reliable minecraft server hosting in asia.",
-
+  description: "A reliable minecraft server hosting in philippines.",
+  openGraph: {
+    title: "SonicNode",
+    description: "A reliable minecraft server hosting in philippines.",
+    type: "website",
+    locale: "en_US",
+    url: "https://sonicnode.xyz/",
+    images: "/logo.svg",
+    siteName: "SonicNode"
+  }
 };
 
 export default function RootLayout({
