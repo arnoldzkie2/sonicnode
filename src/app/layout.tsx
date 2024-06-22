@@ -9,14 +9,14 @@ import Adsense from "@/components/Adsense";
 export const metadata: Metadata = {
   title: "SonicNode - Minecraft Server Hosting",
   icons: '/logo.svg',
-  description: "A reliable minecraft server hosting in philippines.",
+  description: "A reliable Minecraft server hosting in Philippines, offering a 3-day free trial so you can experience our exceptional performance firsthand",
   openGraph: {
-    title: "SonicNode",
-    description: "A reliable minecraft server hosting in philippines.",
+    title: "SonicNode - Minecraft Server Hosting",
+    description: "A reliable Minecraft server hosting in Philippines, offering a 3-day free trial so you can experience our exceptional performance firsthand.",
     type: "website",
     locale: "en_US",
     url: "https://sonicnode.xyz/",
-    images: "/logo.svg",
+    images: "https://sonicnode.xyz/logo.svg",
     siteName: "SonicNode"
   }
 };
