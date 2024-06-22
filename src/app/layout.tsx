@@ -8,7 +8,7 @@ import Adsense from "@/components/Adsense";
 
 export const metadata: Metadata = {
   title: "SonicNode - Minecraft Server Hosting",
-  icons: '/logo.svg',
+  icons: '/logo.png',
   description: "A reliable Minecraft server hosting in Philippines, offering a 3-day free trial so you can experience our exceptional performance firsthand",
   openGraph: {
     title: "SonicNode - Minecraft Server Hosting",
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://sonicnode.xyz/",
-    images: "https://sonicnode.xyz/logo.svg",
+    images: "https://sonicnode.xyz/logo.png",
     siteName: "SonicNode"
   }
 };

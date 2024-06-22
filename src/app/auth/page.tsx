@@ -20,11 +20,7 @@ const Page = () => {
 
     useEffect(() => {
         if (session.status === 'authenticated') {
-            if (session.data.user.root_admin) {
-                router.push('/admin/pending')
-            } else {
-                router.push('/dashboard')
-            }
+            router.push('/dashboard')
         }
     }, [session])
 
