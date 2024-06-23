@@ -31,7 +31,7 @@ const ServerPlans = async ({ eggs }: {
                     content='Dedicated High Speed RAM'
                   />
                 </div>
-                <Image src={`/ores/${plan.name.toLowerCase()}.png`} alt='Ores' width={60} height={60} />
+                <Image src={`/ores/${plan.name.toLowerCase()}.png`} alt='Ores' width={55} height={55} />
               </CardTitle>
               <CardDescription>{plan.description}</CardDescription>
             </CardHeader>
@@ -78,7 +78,7 @@ const ServerPlans = async ({ eggs }: {
                       }
                       content='Sonic Coin ₱1 = 1 Sonic Coin'
                     />
-                    {plan.price}/<span className='text-sm pt-1.5 text-muted-foreground'>30D</span>
+                    {plan.price}/<span className='text-sm pt-1.5 text-muted-foreground'>15D</span>
                   </div>
                 </div>
                 <CreateServer

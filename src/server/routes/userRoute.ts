@@ -126,12 +126,12 @@ export const userRoute = {
         } finally {
             await db.$disconnect()
         }
-
     }),
     test: publicProcedure.query(async () => {
-        await db.server_plans.update({ where: { id: 4 }, data: { price: 539 } })
-        await db.server_plans.update({ where: { id: 5 }, data: { price: 739 } })
-
+        await db.server_plans.update({ where: { id: 1 }, data: { price: 100, ram: 2048 } })
+        await db.server_plans.update({ where: { id: 2 }, data: { price: 150, cpu: 100, disk: 25, ram: 3072 } })
+        await db.server_plans.update({ where: { id: 3 }, data: { price: 200, disk: 30, cpu: 200, ram: 4096 } })
+        await db.server_plans.update({ where: { id: 4 }, data: { price: 300, name: 'diamond', cpu: 200, disk: 50, ram: 6144 } })
         return true
     })
 }

@@ -12,7 +12,7 @@ const Pterodatyl = () => {
       <div className='flex items-start flex-col lg:flex-row gap-10 w-full'>
         <div className='flex flex-col gap-5 w-full lg:w-1/2 xl:w-3/4'>
           <Label className='text-xl text-primary'>Full Server Controll</Label>
-          <h1 className='text-3xl font-black'>Jexactyl Panel Powered by Pterodactyl</h1>
+          <h1 className='text-3xl font-black'>Panel Powered by Pterodactyl</h1>
           <p className='text-muted-foreground'>
             Enjoy full control over your server with an intuitive interface, allowing you to customize settings, manage players, and install plugins with ease. Experience reliable performance and security, perfect for serious gamers and server administrators.
           </p>

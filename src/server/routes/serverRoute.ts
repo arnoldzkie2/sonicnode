@@ -153,7 +153,6 @@ export const serverRoute = {
                 message: "Node doesn't have available ports please contact our support team."
             })
 
-
             //get 1 unassigned allocation
             const unassignedAllocation = allocations.data.data.find((allocation: any) => !allocation.attributes.assigned);
 
@@ -229,7 +228,7 @@ export const serverRoute = {
             // Function to add 30 days to the current date
             const getNextBillingDate = (date: Date) => {
                 let nextBillingDate = new Date(date);
-                nextBillingDate.setDate(nextBillingDate.getDate() + 30);
+                nextBillingDate.setDate(nextBillingDate.getDate() + 15);
                 return nextBillingDate;
             }
             const nextBillingDate = getNextBillingDate(currentDate);
@@ -239,7 +238,7 @@ export const serverRoute = {
                 next_billing: nextBillingDate.toJSON(),
                 renewal: selectedPlan.price,
                 node_points: selectedPlan.points,
-                deletion_countdown: 5
+                deletion_countdown: 3
             }
 
             //get the node points details
@@ -329,12 +328,9 @@ export const serverRoute = {
         yesterday.setDate(today.getDate() - 1);
 
         // Helper function to check if a date is today or yesterday
-        const isTodayOrYesterday = (date: Date) => {
-            const d = new Date(date);
-            return (
-                (d.toDateString() === today.toDateString()) ||
-                (d.toDateString() === yesterday.toDateString())
-            );
+        const isTodayOrPast = (date: Date) => {
+            const d = new Date(date); // Convert input date to Date object
+            return d <= today; // Compare date with today's date
         };
 
         //filter the servers if the next_billing is today
@@ -343,7 +339,7 @@ export const serverRoute = {
                 ...server,
                 sonic_info: JSON.parse(server.sonic_info || '') as SonicInfo
             }))
-            .filter(server => isTodayOrYesterday(new Date(server.sonic_info.next_billing)))
+            .filter(server => isTodayOrPast(new Date(server.sonic_info.next_billing)))
 
         // Prepare batch updates
 
@@ -363,11 +359,11 @@ export const serverRoute = {
 
                 // Update the server's next_billing date
                 const updatedBillingDate = new Date(nextBillingDate);
-                updatedBillingDate.setDate(updatedBillingDate.getDate() + 30)
+                updatedBillingDate.setDate(updatedBillingDate.getDate() + 15)
 
                 const newInfo: SonicInfo = {
                     ...server.sonic_info,
-                    deletion_countdown: 5,
+                    deletion_countdown: 3,
                     next_billing: updatedBillingDate.toJSON()
                 }
 
@@ -470,25 +466,25 @@ export const serverRoute = {
             })
 
             // get the sonic info for renewal
-            const sonicInfo: SonicInfo = JSON.parse(server.sonic_info || "{}")
+            const sonicInfo: SonicInfo = JSON.parse(server.sonic_info || "")
 
             //check if user has enough balance to renew the server
             if (server.users.sonic_coin >= sonicInfo.renewal) {
 
                 const today = new Date()
-                // Create a new Date object and set it to 30 days from today
+                // Create a new Date object and set it to 15 days from today
                 const nextBillingDate = new Date();
-                nextBillingDate.setDate(today.getDate() + 30);
+                nextBillingDate.setDate(today.getDate() + 15);
 
                 //define the new server sonic info
                 const newServerInfo: SonicInfo = {
                     ...sonicInfo,
                     next_billing: nextBillingDate.toJSON(),
-                    deletion_countdown: 5
+                    deletion_countdown: 3
                 }
 
                 //update the user balance and the server renewal and next billing
-                const [updateUserCredit, updateServerInfo, unsuspendServer] = await Promise.all([
+                const [updateUserCredit, updateServerInfo] = await Promise.all([
                     db.users.update({
                         where: { id: server.users.id }, data: {
                             sonic_coin: server.users.sonic_coin - sonicInfo.renewal
@@ -496,9 +492,8 @@ export const serverRoute = {
                     }),
                     db.servers.update({
                         where: { id: server.id },
-                        data: { sonic_info: JSON.stringify(newServerInfo) }
+                        data: { sonic_info: JSON.stringify(newServerInfo), status: null }
                     }),
-                    sonicApi.post(`/servers/${server.id}/unsuspend`)
                 ])
                 if (!updateUserCredit) throw new TRPCError({
                     code: "BAD_REQUEST",
@@ -507,10 +502,6 @@ export const serverRoute = {
                 if (!updateServerInfo) throw new TRPCError({
                     code: "BAD_REQUEST",
                     message: "Something went wrong when updating server info"
-                })
-                if (!unsuspendServer) throw new TRPCError({
-                    code: "BAD_REQUEST",
-                    message: "Something went wrong when unsuspending server"
                 })
 
                 return true

@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { Label } from '../ui/label'
 import Link from 'next/link'
 import { Button } from '../ui/button'
-import { Cpu, Gift, HardDrive, LoaderCircle, MemoryStick, Settings, Settings2 } from 'lucide-react'
+import { Cpu, Gift, HardDrive, LoaderCircle, MemoryStick, Settings2 } from 'lucide-react'
 import ReturnToolTip from '../ui/return-tooltip'
 import Image from 'next/image'
 import { SonicInfo } from '@/server/routes/serverRoute'
@@ -21,9 +21,13 @@ interface Props {
 
 const UserData = ({ initialData }: Props) => {
 
-    const { data } = trpc.server.getUserServers.useQuery(undefined, {
+    const { data, refetch } = trpc.server.getUserServers.useQuery(undefined, {
         initialData: initialData.servers,
-        refetchOnMount: false
+        refetchOnMount: false,
+    })
+    const refetchServer = trpc.server.getUserServers.useQuery(undefined, {
+        refetchOnMount: false,
+        refetchInterval: data.some(serv => serv.status === 'installing') ? 10000 : false
     })
 
     const trialClaimed = trpc.user.checkFreeTrialClaimed.useQuery(undefined, {

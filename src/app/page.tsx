@@ -14,9 +14,11 @@ const HomePage = () => {
     <div className='px-5 sm:px-10 md:container'>
       <Header />
       <Main />
+      <div className='space-y-10 pb-10 md:pb-20'>
+        <Pricing />
+        <Trial />
+      </div>
       <Pterodatyl />
-      <Trial />
-      <Pricing />
       <FAQ />
       <Contact />
       <Footer />

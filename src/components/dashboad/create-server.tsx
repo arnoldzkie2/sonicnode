@@ -53,16 +53,6 @@ const CreateServer = ({ eggs, planID, trigger, trial }: {
                 position: 'bottom-center'
             })
             setOpen(false)
-            // Function to refetch 10 times every 10 seconds
-            let refetchCount = 0;
-            const intervalId = setInterval(() => {
-                if (refetchCount < 6) {
-                    userServers.refetch();
-                    refetchCount++;
-                } else {
-                    clearInterval(intervalId);
-                }
-            }, 10000); // 10000 milliseconds = 10 seconds
         }
     })
 
@@ -78,17 +68,6 @@ const CreateServer = ({ eggs, planID, trigger, trial }: {
                 position: 'bottom-center'
             })
             setOpen(false)
-
-            // Function to refetch 10 times every 10 seconds
-            let refetchCount = 0;
-            const intervalId = setInterval(() => {
-                if (refetchCount < 6) {
-                    userServers.refetch();
-                    refetchCount++;
-                } else {
-                    clearInterval(intervalId);
-                }
-            }, 10000); // 10000 milliseconds = 10 seconds
         }
     })
 

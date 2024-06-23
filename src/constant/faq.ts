@@ -1,9 +1,6 @@
 
 const faqItems = [
-    {
-        question: "What is Sonic Coin?",
-        answer: "Sonic Coin is a digital token specifically created for purchasing servers on our platform, ₱1 = 1 Sonic Coin."
-    },
+
     {
         question: "How do I claim the 3-day free trial?",
         answer: "To claim your 3-day free trial, simply log in to your dashboard and click claim free trial button. Please note that free trial servers will be deleted after 3 days if not renewed."
@@ -23,15 +20,30 @@ const faqItems = [
     {
         question: "What payment methods do you accept?",
         answer: "We accept a variety of payment methods, including GCash, Paymaya, Grab Pay, Cards and Banks. If you have other preferred methods, feel free to contact us."
-    },
-    {
-        question: "How can I rent a server?",
-        answer: "To rent a server, you need to purchase Sonic Coin, our proprietary method of payment. Once you have Sonic Coin, you can use it to rent the server."
-    },
-    {
-        question: "What happens if I don't renew my server?",
-        answer: "If you don't renew your server, it will be suspended. If it is not renewed within the next 5 days, your server will be permanently deleted."
     }
 ]
 
-export { faqItems }
+const faqItems2 = [
+    {
+        question: "Is server renewal automatic?",
+        answer: "Yes, server renewal is automatic if you have sufficient balance in your account. The system will automatically deduct the renewal fee from your balance on the renewal date."
+    },
+    {
+        question: "What if I don't have enough balance to renew?",
+        answer: "If you don't have enough balance to renew your server and the renewal date arrives, your server will be suspended. If it is not renewed within the next 3 days, your server will be permanently deleted."
+    },
+    {
+        question: "Can I renew my server in advance?",
+        answer: "Yes, renewing your server in advance will stack the renewal date. This allows you to use the remaining days from the current period before the new billing cycle start"
+    },
+    {
+        question: "What is Sonic Coin?",
+        answer: "Sonic Coin is a digital token specifically created for purchasing servers on our platform, where ₱1 equals 1 Sonic Coin."
+    },
+    {
+        question: "How can I buy Sonic Coin?",
+        answer: "You can buy Sonic Coin directly through your dashboard. It's a digital token specifically used for purchasing servers on our platform, where ₱1 equals 1 Sonic Coin."
+    }
+]
+
+export { faqItems, faqItems2 }

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
-import { Cpu, GitFork, HardDrive, ShoppingCart, Users } from 'lucide-react'
+import { ChevronsRight, Cpu, GitFork, HardDrive, Play, ShoppingCart, StepForward, Users } from 'lucide-react'
 import { Label } from '../ui/label'
 import ReturnToolTip from '../ui/return-tooltip'
 import { Button } from '../ui/button'
@@ -13,11 +13,11 @@ const Pricing = async () => {
     const plans = await caller.server_plans.getAll()
 
     return (
-        <div className='flex flex-col py-16' id='plans'>
-            <div className='flex flex-wrap gap-8 justify-center'>
+        <div className='flex flex-col' id='plans'>
+            <div className='flex flex-wrap gap-5 justify-center'>
                 {plans.map((plans, i) => (
-                    <Card key={i} className='w-full max-w-80 cursor-pointer hover:shadow-2xl hover:rounded-2xl hover:shadow-yellow-400 hover:scale-[101%] transition-all'>
-                        <CardHeader>
+                    <Card key={i} className='w-[90%] sm:w-64 cursor-pointer hover:shadow-2xl hover:rounded-2xl hover:shadow-yellow-400 hover:scale-[101%] transition-all'>
+                        <CardHeader className='py-4'>
                             <CardTitle className='flex items-center justify-between w-full'>
                                 <div className='flex flex-col gap-1'>
                                     <div className='text-muted-foreground text-base'>{plans.name.toUpperCase()}</div>
@@ -26,9 +26,8 @@ const Pricing = async () => {
                                         content='Dedicated High Speed RAM'
                                     />
                                 </div>
-                                <Image src={`/ores/${plans.name.toLowerCase()}.png`} alt='Ores' width={60} height={60} />
+                                <Image src={`/ores/${plans.name.toLowerCase()}.png`} alt='Ores' width={55} height={55} />
                             </CardTitle>
-                            <CardDescription>{plans.description}</CardDescription>
                         </CardHeader>
                         <CardContent className='flex flex-col gap-2 text-muted-foreground'>
                             <div className='flex items-center justify-between'>
@@ -37,7 +36,7 @@ const Pricing = async () => {
                                         trigger={<HardDrive className='text-foreground' size={20} />}
                                         content='NVMe Storage (2 GB/s Write, 7 GB/s Read)'
                                     />
-                                    <Label className='text-muted-foreground'>NVMe Disk: {plans.disk}GB</Label>
+                                    <Label className='text-muted-foreground'>Disk: {plans.disk}GB</Label>
                                 </div>
                                 <div className='flex items-center gap-2'>
                                     <ReturnToolTip
@@ -54,7 +53,7 @@ const Pricing = async () => {
                                         trigger={<Cpu size={20} className='text-foreground' />}
                                         content="Cpu Power Available"
                                     />
-                                    <Label>Cpu: {plans.cpu}% ({plans.cpu_speed}GHz)</Label>
+                                    <Label>Cpu: {plans.cpu}%</Label>
                                 </div>
                                 <div className='flex items-center gap-2'>
                                     <ReturnToolTip
@@ -76,12 +75,12 @@ const Pricing = async () => {
                                             }
                                             content='Sonic Coin ₱1 = 1 Sonic Coin'
                                         />
-                                        {plans.price}/<span className='text-sm pt-1.5 text-muted-foreground'>30D</span>
+                                        {plans.price}/<span className='text-sm pt-1.5 text-muted-foreground'>15D</span>
                                     </div>
                                 </div>
                                 <Link href={'/dashboard'}>
-                                    <Button className='rounded-full w-[55px] h-[55px] bg-muted text-foreground hover:text-white'>
-                                        <ShoppingCart size={25} />
+                                    <Button className='rounded-full w-[50px] h-[50px] p-0 bg-muted text-foreground hover:text-white'>
+                                        <ChevronsRight size={25} />
                                     </Button>
                                 </Link>
                             </div>

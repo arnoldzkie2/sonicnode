@@ -24,7 +24,6 @@ const Main = () => {
                     </Link>
                 </div>
             </div>
-            <Separator className='hidden sm:flex' />
             <ul className='flex flex-col text-start self-start gap-4'>
                 <Label className='text-2xl sm:text-center'>Key Features:</Label>
                 <div className='flex flex-col sm:flex-row flex-wrap sm:justify-center gap-5 sm:w-full xl:w-2/3 self-center sm:items-center'>
