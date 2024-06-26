@@ -13,6 +13,7 @@ import { SOCIAL } from '@/constant/links';
 import { trpc } from '@/app/_trpc/client';
 import ReCAPTCHA from 'react-google-recaptcha';
 import useAuthStore from '@/stores/authStore';
+import { CircleChevronDown } from 'lucide-react';
 
 const Contact = () => {
 
@@ -56,7 +57,7 @@ const Contact = () => {
 
     return (
 
-        <div className='flex items-center w-full flex-col gap-5 lg:flex-row lg:h-screen lg:justify-between' id='contact'  >
+        <div className='flex items-center w-full flex-col pt-20 gap-5 lg:flex-row lg:justify-between' id='contact'  >
             <div className='flex flex-col gap-4 lg:w-1/3'>
                 <h2 className='text-primary text-xl'>Contact Us</h2>
                 <h1 className='text-3xl lg:text-4xl font-black'>Send Us Your Thoughts</h1>
@@ -69,10 +70,13 @@ const Contact = () => {
                     <FontAwesomeIcon icon={faEnvelope} width={20} height={20} className='text-xl' />
                     support@sonicnode.xyz
                 </Button>
-                <div className='flex items-center justify-evenly mt-10'>
-                    {[1, 2, 3, 4, 5].map(num => (
-                        <div key={num} className='bg-muted w-10 h-1 hover:bg-primary'></div>
-                    ))}
+                <div className='flex items-center mt-8 xl:mt-10 2xl:mt-14'>
+                    <div className='text-3xl font-[1000] hidden lg:flex lg:items-center lg:gap-5'>
+                        <div>
+                            Questions? Look here.
+                        </div>
+                        <CircleChevronDown size={40} />
+                    </div>
                 </div>
             </div>
             <ReCAPTCHA size='invisible' ref={recaptchaRef} sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT as string} />

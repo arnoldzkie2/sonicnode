@@ -16,7 +16,7 @@ const Pricing = async () => {
         <div className='flex flex-col' id='plans'>
             <div className='flex flex-wrap gap-5 justify-center'>
                 {plans.map((plans, i) => (
-                    <Card key={i} className='w-[90%] sm:w-64 cursor-pointer hover:shadow-2xl hover:rounded-2xl hover:shadow-yellow-400 hover:scale-[101%] transition-all'>
+                    <Card key={i} className='w-[100%] sm:w-72 cursor-pointer hover:shadow-2xl hover:rounded-2xl hover:shadow-yellow-400 hover:scale-[101%] transition-all'>
                         <CardHeader className='py-4'>
                             <CardTitle className='flex items-center justify-between w-full'>
                                 <div className='flex flex-col gap-1'>
@@ -28,6 +28,7 @@ const Pricing = async () => {
                                 </div>
                                 <Image src={`/ores/${plans.name.toLowerCase()}.png`} alt='Ores' width={55} height={55} />
                             </CardTitle>
+                            <CardDescription>{plans.description}</CardDescription>
                         </CardHeader>
                         <CardContent className='flex flex-col gap-2 text-muted-foreground'>
                             <div className='flex items-center justify-between'>
@@ -36,7 +37,7 @@ const Pricing = async () => {
                                         trigger={<HardDrive className='text-foreground' size={20} />}
                                         content='NVMe Storage (2 GB/s Write, 7 GB/s Read)'
                                     />
-                                    <Label className='text-muted-foreground'>Disk: {plans.disk}GB</Label>
+                                    <Label className='text-muted-foreground'>NVMe Disk: {plans.disk}GB</Label>
                                 </div>
                                 <div className='flex items-center gap-2'>
                                     <ReturnToolTip
@@ -53,7 +54,7 @@ const Pricing = async () => {
                                         trigger={<Cpu size={20} className='text-foreground' />}
                                         content="Cpu Power Available"
                                     />
-                                    <Label>Cpu: {plans.cpu}%</Label>
+                                    <Label>Cpu: {plans.cpu}% (3.2GHz)</Label>
                                 </div>
                                 <div className='flex items-center gap-2'>
                                     <ReturnToolTip

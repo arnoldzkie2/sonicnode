@@ -74,7 +74,7 @@ const ServerPlans = async ({ eggs }: {
                   <div className='text-foreground flex items-center font-[1000] border-b-2 border-yellow-400 text-2xl'>
                     <ReturnToolTip
                       trigger={
-                        <Image src="/logo.svg" width={25} height={25} alt='Sonic Coin' className='mr-1.5' />
+                        <Image src="/logo.svg" width={25} height={25} alt='Sonic Coin' className='mr-1' />
                       }
                       content='Sonic Coin ₱1 = 1 Sonic Coin'
                     />

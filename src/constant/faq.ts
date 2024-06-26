@@ -17,13 +17,13 @@ const faqItems = [
         question: "Can I upgrade my plan after I bought it?",
         answer: "Yes, you can upgrade your plan at any time from your dashboard. We offer a variety of plans to suit different needs and budgets. Please note that to ensure you receive dedicated resources, we will need to transfer your server to a new node during the upgrade process.."
     },
-    {
-        question: "What payment methods do you accept?",
-        answer: "We accept a variety of payment methods, including GCash, Paymaya, Grab Pay, Cards and Banks. If you have other preferred methods, feel free to contact us."
-    }
 ]
 
 const faqItems2 = [
+    {
+        question: "What payment methods do you accept?",
+        answer: "We accept a variety of payment methods, including GCash, Paymaya, Grab Pay, Cards and Banks. If you have other preferred methods, feel free to contact us."
+    },
     {
         question: "Is server renewal automatic?",
         answer: "Yes, server renewal is automatic if you have sufficient balance in your account. The system will automatically deduct the renewal fee from your balance on the renewal date."
@@ -35,14 +35,6 @@ const faqItems2 = [
     {
         question: "Can I renew my server in advance?",
         answer: "Yes, renewing your server in advance will stack the renewal date. This allows you to use the remaining days from the current period before the new billing cycle start"
-    },
-    {
-        question: "What is Sonic Coin?",
-        answer: "Sonic Coin is a digital token specifically created for purchasing servers on our platform, where ₱1 equals 1 Sonic Coin."
-    },
-    {
-        question: "How can I buy Sonic Coin?",
-        answer: "You can buy Sonic Coin directly through your dashboard. It's a digital token specifically used for purchasing servers on our platform, where ₱1 equals 1 Sonic Coin."
     }
 ]
 

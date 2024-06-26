@@ -19,8 +19,8 @@ const HomePage = () => {
         <Trial />
       </div>
       <Pterodatyl />
-      <FAQ />
       <Contact />
+      <FAQ />
       <Footer />
     </div>
   )
