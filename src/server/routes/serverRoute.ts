@@ -8,7 +8,6 @@ import { apiLimiter, sonicApi } from "@/lib/api";
 interface NodeDescription {
     maxPoints: number
     totalPoints: number
-    remainingPoints: number
 }
 
 interface SonicInfo {
@@ -125,16 +124,22 @@ export const serverRoute = {
 
                 const nodeDescription: NodeDescription = JSON.parse(node.description as string)
 
-                const { remainingPoints, maxPoints, totalPoints } = nodeDescription
+                const {  maxPoints, totalPoints } = nodeDescription
+
+                const remainingPoints = maxPoints - totalPoints
                 const requiredPoints = selectedPlan.points
 
-                // Check if remainingPoints meets requirement
-                if ((remainingPoints >= requiredPoints) && (totalPoints < maxPoints)) {
+                const newTotalNodePoints = totalPoints + requiredPoints
+                const remainingNodePoints = maxPoints - newTotalNodePoints
+
+                // Check if remainingPoints meets requirement and also
+                if (remainingPoints >= requiredPoints && remainingNodePoints >=2) {
                     return true; // Node qualifies based on conditions
                 } else {
                     return false; // Node does not qualify
                 }
             })
+
             if (availableNode.length === 0) throw new TRPCError({
                 code: "BAD_REQUEST",
                 message: "No available node please contact our support team."
@@ -243,13 +248,12 @@ export const serverRoute = {
 
             //get the node points details
             const nodePoints: NodeDescription = JSON.parse(selectedNode.description as string)
-            const { remainingPoints, totalPoints, maxPoints } = nodePoints
+            const {  totalPoints, maxPoints } = nodePoints
 
             //update the node points
             const newNodePoints = JSON.stringify({
                 maxPoints,
-                totalPoints: totalPoints + selectedPlan.points,
-                remainingPoints: remainingPoints - selectedPlan.points
+                totalPoints: totalPoints + selectedPlan.points
             })
 
             //update user credits,serverinfo,node points
@@ -413,8 +417,7 @@ export const serverRoute = {
 
                     const newNodePoints: NodeDescription = {
                         maxPoints: nodePoints.maxPoints,
-                        totalPoints: nodePoints.totalPoints - server.sonic_info.node_points,
-                        remainingPoints: nodePoints.remainingPoints + server.sonic_info.node_points
+                        totalPoints: nodePoints.totalPoints - server.sonic_info.node_points
                     }
 
                     // user has failed renew the server and is being deleted
@@ -576,8 +579,9 @@ export const serverRoute = {
 
                 const nodeDescription: NodeDescription = JSON.parse(node.description as string)
 
-                const { remainingPoints, maxPoints, totalPoints } = nodeDescription
+                const {  maxPoints, totalPoints } = nodeDescription
                 const requiredPoints = selectedPlan.points
+                const remainingPoints = maxPoints - totalPoints
 
                 // Check if remainingPoints meets requirement
                 if ((remainingPoints >= requiredPoints) && (totalPoints < maxPoints)) {
@@ -692,13 +696,12 @@ export const serverRoute = {
 
             //get the node points details
             const nodePoints: NodeDescription = JSON.parse(selectedNode.description as string)
-            const { remainingPoints, totalPoints, maxPoints } = nodePoints
+            const {  totalPoints, maxPoints } = nodePoints
 
             //update the node points
             const newNodePoints = JSON.stringify({
                 maxPoints,
-                totalPoints: totalPoints + selectedPlan.points,
-                remainingPoints: remainingPoints - selectedPlan.points
+                totalPoints: totalPoints + selectedPlan.points
             })
 
             //update user credits,serverinfo,node points
