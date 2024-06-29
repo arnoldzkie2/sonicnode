@@ -78,7 +78,7 @@ const ServerPlans = async ({ eggs }: {
                       }
                       content='Sonic Coin ₱1 = 1 Sonic Coin'
                     />
-                    {plan.price}/<span className='text-sm pt-1.5 text-muted-foreground'>15D</span>
+                    {plan.price}/<span className='text-sm pt-1.5 text-muted-foreground'>30D</span>
                   </div>
                 </div>
                 <CreateServer

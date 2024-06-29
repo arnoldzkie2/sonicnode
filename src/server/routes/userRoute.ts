@@ -128,9 +128,10 @@ export const userRoute = {
         }
     }),
     test: publicProcedure.query(async () => {
-        await db.server_plans.update({ where: { id: 2 }, data: { points: 2 } })
-        await db.server_plans.update({ where: { id: 3 }, data: { points: 3 } })
-        await db.server_plans.update({ where: { id: 4 }, data: { points: 4 } })
+        await db.server_plans.update({ where: { id: 1 }, data: { points: 2,ram: 1536, price: 190} })
+        await db.server_plans.update({ where: { id: 2 }, data: { points: 2, price: 280, disk: 20} })
+        await db.server_plans.update({ where: { id: 3 }, data: { points: 3, price: 420, disk:30 } })
+        await db.server_plans.update({ where: { id: 4 }, data: { points: 4, price: 560, disk: 40 } })
         return await db.server_plans.findMany()
     })
 }

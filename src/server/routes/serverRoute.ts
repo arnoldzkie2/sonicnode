@@ -233,7 +233,7 @@ export const serverRoute = {
             // Function to add 30 days to the current date
             const getNextBillingDate = (date: Date) => {
                 let nextBillingDate = new Date(date);
-                nextBillingDate.setDate(nextBillingDate.getDate() + 15);
+                nextBillingDate.setDate(nextBillingDate.getDate() + 30);
                 return nextBillingDate;
             }
             const nextBillingDate = getNextBillingDate(currentDate);
@@ -363,7 +363,7 @@ export const serverRoute = {
 
                 // Update the server's next_billing date
                 const updatedBillingDate = new Date(nextBillingDate);
-                updatedBillingDate.setDate(updatedBillingDate.getDate() + 15)
+                updatedBillingDate.setDate(updatedBillingDate.getDate() + 30)
 
                 const newInfo: SonicInfo = {
                     ...server.sonic_info,
@@ -475,9 +475,9 @@ export const serverRoute = {
             if (server.users.sonic_coin >= sonicInfo.renewal) {
 
                 const today = new Date()
-                // Create a new Date object and set it to 15 days from today
+                // Create a new Date object and set it to 30 days from today
                 const nextBillingDate = new Date();
-                nextBillingDate.setDate(today.getDate() + 15);
+                nextBillingDate.setDate(today.getDate() + 30);
 
                 //define the new server sonic info
                 const newServerInfo: SonicInfo = {

@@ -76,7 +76,7 @@ const Pricing = async () => {
                                             }
                                             content='Sonic Coin ₱1 = 1 Sonic Coin'
                                         />
-                                        {plans.price}/<span className='text-sm pt-1.5 text-muted-foreground'>15D</span>
+                                        {plans.price}/<span className='text-sm pt-1.5 text-muted-foreground'>30D</span>
                                     </div>
                                 </div>
                                 <Link href={'/dashboard'}>
