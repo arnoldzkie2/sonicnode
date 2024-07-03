@@ -4,29 +4,23 @@ import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHea
 import { Button } from '../ui/button'
 import { LoaderCircle } from 'lucide-react'
 import { Label } from '../ui/label'
-import { Input } from '../ui/input'
 import { Separator } from '../ui/separator'
 import { trpc } from '@/app/_trpc/client'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { toast } from 'sonner'
 
-const CreateServer = ({ eggs, planID, trigger, trial }: {
+const ClaimFreeTrial = ({ eggs, trigger }: {
     eggs: {
         name: string
         id: number
     }[]
-    planID: number
     trigger: any
-    trial: boolean
 }) => {
 
     const [open, setOpen] = useState(false)
 
     const [serverFormData, setServerFormData] = useState({
-        planID: 0,
-        name: '',
         egg: '',
-        description: ''
     })
 
     const userServers = trpc.server.getUserServers.useQuery(undefined, {
@@ -56,32 +50,16 @@ const CreateServer = ({ eggs, planID, trigger, trial }: {
         }
     })
 
-    const createServer = trpc.server.createServer.useMutation({
-        onError: (err) => {
-            toast.error(err.message, {
-                position: 'bottom-center'
-            })
-        },
-        onSuccess: async () => {
-            userServers.refetch()
-            toast.success("Success! server created.", {
-                position: 'bottom-center'
-            })
-            setOpen(false)
-        }
-    })
-
     return (
         <AlertDialog open={open} onOpenChange={setOpen}>
             <AlertDialogTrigger asChild onClick={() => setServerFormData(prev => ({
                 ...prev,
-                planID
             }))}>
                 {trigger}
             </AlertDialogTrigger>
             <AlertDialogContent className='w-full max-w-96'>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Create a server</AlertDialogTitle>
+                    <AlertDialogTitle>Create free trial server</AlertDialogTitle>
                     <AlertDialogDescription>
                         Set up your own Minecraft world to play with friends. Customize settings and manage your server easily.
                     </AlertDialogDescription>
@@ -90,11 +68,7 @@ const CreateServer = ({ eggs, planID, trigger, trial }: {
                 <form className='flex flex-col space-y-4' onSubmit={async (e) => {
                     e.preventDefault()
                     const data = { ...serverFormData, egg: Number(serverFormData.egg) }
-                    if (trial) {
-                        await createFreeTrial.mutateAsync(data)
-                    } else {
-                        await createServer.mutateAsync(data)
-                    }
+                    await createFreeTrial.mutateAsync(data)
                 }}>
                     <div className='flex flex-col space-y-3'>
                         <Label>Server Type</Label>
@@ -111,30 +85,13 @@ const CreateServer = ({ eggs, planID, trigger, trial }: {
                             </SelectContent>
                         </Select>
                     </div>
-                    <div className='flex flex-col space-y-2'>
-                        <Label>Server Name</Label>
-                        <Input required value={serverFormData.name} onChange={(e) => setServerFormData(prev => ({ ...prev, name: e.target.value }))} />
-                    </div>
-                    <div className='flex flex-col space-y-2'>
-                        <Label>Server Description (optional)</Label>
-                        <Input value={serverFormData.description} onChange={(e) => setServerFormData(prev => ({ ...prev, description: e.target.value }))} />
-                    </div>
-
                     <div className='flex items-center gap-5 w-full pt-4'>
                         <Button onClick={() => setOpen(false)} variant={'ghost'} type='button' className='w-full'>Close</Button>
-                        {!trial ?
-                            <Button disabled={createServer.isPending} className='w-full'>
-                                {
-                                    createServer.isPending ? <LoaderCircle size={16} className='animate-spin' /> : 'Create'
-                                }
-                            </Button>
-                            :
-                            <Button disabled={createFreeTrial.isPending} className='w-full'>
-                                {
-                                    createFreeTrial.isPending ? <LoaderCircle size={16} className='animate-spin' /> : 'Create'
-                                }
-                            </Button>
-                        }
+                        <Button disabled={createFreeTrial.isPending} className='w-full'>
+                            {
+                                createFreeTrial.isPending ? <LoaderCircle size={16} className='animate-spin' /> : 'Claim'
+                            }
+                        </Button>
                     </div>
                 </form>
             </AlertDialogContent>
@@ -143,4 +100,4 @@ const CreateServer = ({ eggs, planID, trigger, trial }: {
     )
 }
 
-export default CreateServer
+export default ClaimFreeTrial

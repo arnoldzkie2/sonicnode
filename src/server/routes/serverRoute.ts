@@ -4,6 +4,7 @@ import { TRPCError } from "@trpc/server"
 import { getAuth } from "@/lib/nextauth"
 import db from "@/lib/db"
 import { apiLimiter, sonicApi } from "@/lib/api";
+import { serverPlan } from "@/constant/plans"
 
 interface NodeDescription {
     maxPoints: number
@@ -62,9 +63,7 @@ export const serverRoute = {
         }
     }),
     createServer: publicProcedure.input(z.object({
-        planID: z.number(),
-        name: z.string(),
-        description: z.string().optional(),
+        planPoints: z.number(),
         egg: z.number()
     })).mutation(async (opts) => {
 
@@ -72,16 +71,17 @@ export const serverRoute = {
 
             await apiLimiter.consume(1)
 
-            const { planID, name, egg, description } = opts.input
+            const { planPoints, egg } = opts.input
 
-            if (!name) throw new TRPCError({
-                code: "NOT_FOUND",
-                message: "Server name is required"
-            })
-            if (!planID) throw new TRPCError({
+            if (!planPoints) throw new TRPCError({
                 code: "NOT_FOUND",
                 message: "Select a plan"
             })
+            if (planPoints > 6) throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: "Invalid plan"
+            })
+
             if (!egg) throw new TRPCError({
                 code: "NOT_FOUND",
                 message: "Server Type is required"
@@ -96,13 +96,14 @@ export const serverRoute = {
                 message: "User does not exist"
             })
 
-            //check if plan exist
-            const selectedPlan = await db.server_plans.findUnique({ where: { id: planID } })
-            if (!selectedPlan) throw new TRPCError({
-                code: "NOT_FOUND",
-                message: "Plan does not exist"
-            })
-
+            const selectedPlan = {
+                cpu: serverPlan.cpu * planPoints,
+                ram: serverPlan.ram * planPoints,
+                disk: serverPlan.disk * planPoints,
+                player: serverPlan.player * planPoints,
+                port: serverPlan.port * planPoints,
+                price: serverPlan.price * planPoints,
+            }
 
             //check if user has enough sonic coin to purchase a server
             if (user.sonic_coin < selectedPlan.price) throw new TRPCError({
@@ -111,9 +112,7 @@ export const serverRoute = {
             })
 
             //select all nodes that matched the selected plan
-            const selectedNodes = await db.nodes.findMany({
-                where: { name: selectedPlan.node }
-            })
+            const selectedNodes = await db.nodes.findMany()
             if (selectedNodes.length === 0) throw new TRPCError({
                 code: "BAD_REQUEST",
                 message: "No available node please contact our support team."
@@ -124,16 +123,13 @@ export const serverRoute = {
 
                 const nodeDescription: NodeDescription = JSON.parse(node.description as string)
 
-                const {  maxPoints, totalPoints } = nodeDescription
+                const { maxPoints, totalPoints } = nodeDescription
 
                 const remainingPoints = maxPoints - totalPoints
-                const requiredPoints = selectedPlan.points
-
-                const newTotalNodePoints = totalPoints + requiredPoints
-                const remainingNodePoints = maxPoints - newTotalNodePoints
+                const requiredPoints = planPoints
 
                 // Check if remainingPoints meets requirement and also
-                if (remainingPoints >= requiredPoints && remainingNodePoints !== 1) {
+                if (remainingPoints >= requiredPoints) {
                     return true; // Node qualifies based on conditions
                 } else {
                     return false; // Node does not qualify
@@ -144,7 +140,6 @@ export const serverRoute = {
                 code: "BAD_REQUEST",
                 message: "No available node please contact our support team."
             })
-
 
             //get the first selected node
             const selectedNode = availableNode[0]
@@ -188,23 +183,22 @@ export const serverRoute = {
             const selectedImage = Object.values(dockerImages)[0] as string
             const defaultPortID = unassignedAllocation.attributes.id
             const resources = {
-                memory: selectedPlan.ram,
+                memory: selectedPlan.ram * 1024,
                 cpu: selectedPlan.cpu,
                 swap: -1,
-                disk: selectedPlan.disk * 1000,
+                disk: selectedPlan.disk * 1024,
                 io: 500
             }
             const featureLimits = {
                 databases: 1,
-                allocations: 5,
-                backups: 2
+                allocations: selectedPlan.port * planPoints,
+                backups: 1
             }
 
             //make an api call to create the server 
             const { data } = await sonicApi.post('/servers', {
-                name: opts.input.name,
+                name: `${user.username} Server`,
                 user: user.id,
-                description,
                 nest: checkEgg.nest_id,
                 egg: checkEgg.id,
                 docker_image: selectedImage,
@@ -242,18 +236,18 @@ export const serverRoute = {
             const sonicInfo: SonicInfo = {
                 next_billing: nextBillingDate.toJSON(),
                 renewal: selectedPlan.price,
-                node_points: selectedPlan.points,
+                node_points: planPoints,
                 deletion_countdown: 3
             }
 
             //get the node points details
             const nodePoints: NodeDescription = JSON.parse(selectedNode.description as string)
-            const {  totalPoints, maxPoints } = nodePoints
+            const { totalPoints, maxPoints } = nodePoints
 
             //update the node points
             const newNodePoints = JSON.stringify({
                 maxPoints,
-                totalPoints: totalPoints + selectedPlan.points
+                totalPoints: totalPoints + planPoints
             })
 
             //update user credits,serverinfo,node points
@@ -474,10 +468,10 @@ export const serverRoute = {
             //check if user has enough balance to renew the server
             if (server.users.sonic_coin >= sonicInfo.renewal) {
 
-                const today = new Date()
-                // Create a new Date object and set it to 30 days from today
-                const nextBillingDate = new Date();
-                nextBillingDate.setDate(today.getDate() + 30);
+                const billingDate = new Date(sonicInfo.next_billing);
+                // Create a new Date object and set it to 30 days from billingDate
+                const nextBillingDate = new Date(billingDate);
+                nextBillingDate.setDate(nextBillingDate.getDate() + 30);
 
                 //define the new server sonic info
                 const newServerInfo: SonicInfo = {
@@ -529,8 +523,6 @@ export const serverRoute = {
         }
     }),
     createFreeTrialServer: publicProcedure.input(z.object({
-        name: z.string(),
-        description: z.string().optional(),
         egg: z.number()
     })).mutation(async (opts) => {
 
@@ -538,12 +530,8 @@ export const serverRoute = {
 
             await apiLimiter.consume(1)
 
-            const { name, egg, description } = opts.input
+            const { egg } = opts.input
 
-            if (!name) throw new TRPCError({
-                code: "NOT_FOUND",
-                message: "Server name is required"
-            })
             if (!egg) throw new TRPCError({
                 code: "NOT_FOUND",
                 message: "Server Type is required"
@@ -559,16 +547,10 @@ export const serverRoute = {
             })
 
             //get the free trial plan
-            const selectedPlan = await db.server_plans.findFirst({ where: { id: 1 } })
-            if (!selectedPlan) throw new TRPCError({
-                code: "NOT_FOUND",
-                message: "Plan does not exist"
-            })
+            const planPoints = 1
 
             //select all nodes that matched the selected plan
-            const selectedNodes = await db.nodes.findMany({
-                where: { name: selectedPlan.node }
-            })
+            const selectedNodes = await db.nodes.findMany()
             if (selectedNodes.length === 0) throw new TRPCError({
                 code: "BAD_REQUEST",
                 message: "No available node for free trial please try again tomorrow."
@@ -579,12 +561,12 @@ export const serverRoute = {
 
                 const nodeDescription: NodeDescription = JSON.parse(node.description as string)
 
-                const {  maxPoints, totalPoints } = nodeDescription
-                const requiredPoints = selectedPlan.points
+                const { maxPoints, totalPoints } = nodeDescription
+                const requiredPoints = planPoints
                 const remainingPoints = maxPoints - totalPoints
 
                 // Check if remainingPoints meets requirement
-                if ((remainingPoints >= requiredPoints) && (totalPoints < maxPoints)) {
+                if (remainingPoints >= requiredPoints) {
                     return true; // Node qualifies based on conditions
                 } else {
                     return false; // Node does not qualify
@@ -637,10 +619,10 @@ export const serverRoute = {
             const selectedImage = Object.values(dockerImages)[0] as string
             const defaultPortID = unassignedAllocation.attributes.id
             const resources = {
-                memory: selectedPlan.ram,
-                cpu: selectedPlan.cpu,
+                memory: serverPlan.ram * 1024,
+                cpu: serverPlan.cpu,
                 swap: -1,
-                disk: selectedPlan.disk * 1000,
+                disk: serverPlan.disk * 1024,
                 io: 500
             }
             const featureLimits = {
@@ -651,9 +633,8 @@ export const serverRoute = {
 
             //make an api call to create the server 
             const { data } = await sonicApi.post('/servers', {
-                name: opts.input.name,
+                name: `${user.username} Free Trial`,
                 user: user.id,
-                description,
                 nest: checkEgg.nest_id,
                 egg: checkEgg.id,
                 docker_image: selectedImage,
@@ -689,19 +670,19 @@ export const serverRoute = {
             //put this in sonic_info so we can parse it later and get additional information
             const sonicInfo: SonicInfo = {
                 next_billing: nextBillingDate.toJSON(),
-                renewal: selectedPlan.price,
-                node_points: selectedPlan.points,
+                renewal: serverPlan.price,
+                node_points: planPoints,
                 deletion_countdown: 0
             }
 
             //get the node points details
             const nodePoints: NodeDescription = JSON.parse(selectedNode.description as string)
-            const {  totalPoints, maxPoints } = nodePoints
+            const { totalPoints, maxPoints } = nodePoints
 
             //update the node points
             const newNodePoints = JSON.stringify({
                 maxPoints,
-                totalPoints: totalPoints + selectedPlan.points
+                totalPoints: totalPoints + planPoints
             })
 
             //update user credits,serverinfo,node points

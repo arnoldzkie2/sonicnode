@@ -5,15 +5,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { Label } from '../ui/label'
 import Link from 'next/link'
 import { Button } from '../ui/button'
-import { Cpu, Gift, HardDrive, LoaderCircle, MemoryStick, Settings2 } from 'lucide-react'
+import { Bolt, Cpu, ExternalLink, Gift, HardDrive, LoaderCircle, MemoryStick } from 'lucide-react'
 import ReturnToolTip from '../ui/return-tooltip'
 import Image from 'next/image'
 import { SonicInfo } from '@/server/routes/serverRoute'
-import RenewServer from './renew-server'
 import { trpc } from '@/app/_trpc/client'
 import UserCredits from './user-credits'
 import { Separator } from '../ui/separator'
-import CreateServer from './create-server'
+import ClaimServer from './claim-freetrial-server'
+import ServerSettings from './server-settings'
 
 interface Props {
     initialData: Awaited<ReturnType<(typeof caller['dashboard']['getDashboardData'])>>
@@ -63,10 +63,8 @@ const UserData = ({ initialData }: Props) => {
                 <div className='py-5 w-full space-y-2 border-b'>
                     <Label className='text-primary text-lg'>Free Trial (3Days)</Label>
                     <p className='text-muted-foreground text-sm'>Try our coal plan free for 3 days. No payment needed.</p>
-                    <CreateServer
+                    <ClaimServer
                         eggs={initialData.eggs}
-                        planID={1}
-                        trial={true}
                         trigger={
                             <Button className='w-full'>CLAIM FREE TRIAL<Gift size={16} className='animate-bounce ml-2' /></Button>
                         } />
@@ -74,10 +72,10 @@ const UserData = ({ initialData }: Props) => {
             <UserCredits initialData={initialData} />
             <Separator />
             <div className='flex items-center py-5 gap-5 w-full justify-between'>
-                <Link href={process.env.NEXT_PUBLIC_APP_URL as string || '/'}>
+                <Link href={process.env.NEXT_PUBLIC_APP_URL as string} target='_blank'>
                     <Button className='flex items-center gap-2 text-foreground' variant={'secondary'}>
-                        <div>Manage Server</div>
-                        <Settings2 size={16} />
+                        <div>Control Panel</div>
+                        <ExternalLink size={16} />
                     </Button>
                 </Link>
             </div>
@@ -88,7 +86,12 @@ const UserData = ({ initialData }: Props) => {
                         return (
                             <Card key={i} className='w-full'>
                                 <CardHeader>
-                                    <CardTitle>{server.name}</CardTitle>
+                                    <CardTitle className='flex w-full items-center justify-between'>
+                                        <div>
+                                            {server.name}
+                                        </div>
+                                        <ServerSettings serverID={server.id} refetch={refetch} />
+                                    </CardTitle>
                                 </CardHeader>
                                 <CardContent className='flex flex-col gap-2 text-muted-foreground'>
                                     <div className='flex w-full justify-between'>
@@ -97,7 +100,7 @@ const UserData = ({ initialData }: Props) => {
                                                 trigger={<MemoryStick className='text-foreground' size={20} />}
                                                 content='Dedicated Fast Memory Speed'
                                             />
-                                            <Label className='text-muted-foreground'>Ram: {server.memory}MB</Label>
+                                            <Label className='text-muted-foreground'>Ram: {server.memory}MiB</Label>
                                         </div>
                                         <div className='flex items-center gap-1.5 w-24'>
                                             <ReturnToolTip
@@ -113,7 +116,7 @@ const UserData = ({ initialData }: Props) => {
                                                 trigger={<HardDrive className='text-foreground' size={20} />}
                                                 content='NVMe Storage (2 GB/s Write, 7 GB/s Read)'
                                             />
-                                            <Label className='text-muted-foreground'>Disk: {server.disk}MB</Label>
+                                            <Label className='text-muted-foreground'>Disk: {server.disk}MiB</Label>
                                         </div>
                                         <div className='flex items-center gap-1.5 w-24'>
                                             <ReturnToolTip
@@ -127,17 +130,6 @@ const UserData = ({ initialData }: Props) => {
                                         <small className='text-muted-foreground'>Next Billing: {new Date(sonicInfo.next_billing || '').toLocaleDateString()}</small>
                                         {returnStatusButton(server.status)}
                                     </div>
-                                    {server.status === 'suspended' && <div className='space-y-3 text-primary pt-3 border-t'>
-                                        <div className='text-sm'>
-                                            This Server will be deleted in {sonicInfo.deletion_countdown || 0} {sonicInfo.deletion_countdown > 1 ? "days" : "day"} if not renewed.
-                                        </div>
-                                        <div className='flex w-full items-center gap-5'>
-                                            <Link href={process.env.NEXT_PUBLIC_APP_URL as string} className='w-full'>
-                                                <Button className='w-full' variant={'secondary'}>Backup</Button>
-                                            </Link>
-                                            <RenewServer serverID={server.id} />
-                                        </div>
-                                    </div>}
                                 </CardContent>
                             </Card>
                         )

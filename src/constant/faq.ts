@@ -30,7 +30,7 @@ const faqItems2 = [
     },
     {
         question: "What if I don't have enough balance to renew?",
-        answer: "If you don't have enough balance to renew your server and the renewal date arrives, your server will be suspended. If it is not renewed within the next 3 days, your server will be permanently deleted."
+        answer: "If you don't have enough balance to renew your server and the renewal date arrives, your server will be permanently deleted."
     },
     {
         question: "Can I renew my server in advance?",
