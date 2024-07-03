@@ -133,7 +133,7 @@ export const serverRoute = {
                 const remainingNodePoints = maxPoints - newTotalNodePoints
 
                 // Check if remainingPoints meets requirement and also
-                if (remainingPoints >= requiredPoints && remainingNodePoints >=2) {
+                if (remainingPoints >= requiredPoints && remainingNodePoints !== 1) {
                     return true; // Node qualifies based on conditions
                 } else {
                     return false; // Node does not qualify

@@ -612,7 +612,7 @@ model server_plans {
   name        String
   node        String
   cpu         Int
-  cpu_speed   String
+  cpu_speed   String?
   ram         Int
   disk        Int
   price       Int
