@@ -122,6 +122,10 @@ export const serverRoute = {
             const availableNode = selectedNodes.filter(node => {
 
                 const nodeDescription: NodeDescription = JSON.parse(node.description as string)
+                if (!nodeDescription) throw new TRPCError({
+                    code: "BAD_REQUEST",
+                    message: "No available node, Please contact our support team."
+                })
 
                 const { maxPoints, totalPoints } = nodeDescription
 
