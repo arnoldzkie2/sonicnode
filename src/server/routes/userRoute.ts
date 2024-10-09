@@ -40,13 +40,10 @@ export const userRoute = {
                 message: "Email Already Exist"
             })
 
-            console.log("creating the user ")
             const { data } = await sonicApi.post('/users', {
                 ...opts.input,
                 first_name: 'Sonic', last_name: 'Node'
             })
-
-            console.log("done")
 
             if (data) {
 

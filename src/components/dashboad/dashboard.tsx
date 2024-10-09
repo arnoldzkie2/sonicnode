@@ -10,7 +10,7 @@ const DashboardTabs = ({ initialData }: {
 }) => {
 
     return (
-        <div className='pt-24 md:pt-10'>
+        <div className='py-24 md:pt-10'>
             <Tabs defaultValue="servers" className="w-full flex flex-col items-center">
                 <TabsList className="grid w-full max-w-[500px] grid-cols-2">
                     <TabsTrigger value="servers" className='flex items-center gap-2'>

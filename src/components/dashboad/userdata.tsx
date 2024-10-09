@@ -21,18 +21,14 @@ interface Props {
 
 const UserData = ({ initialData }: Props) => {
 
-    const { data, refetch } = trpc.server.getUserServers.useQuery(undefined, {
-        initialData: initialData.servers,
+    const { data: userData, refetch: refetchUserData } = trpc.dashboard.getDashboardData.useQuery(undefined, {
         refetchOnMount: false,
-    })
-    const refetchServer = trpc.server.getUserServers.useQuery(undefined, {
-        refetchOnMount: false,
-        refetchInterval: data.some(serv => serv.status === 'installing') ? 10000 : false
+        initialData: initialData,
     })
 
-    const trialClaimed = trpc.user.checkFreeTrialClaimed.useQuery(undefined, {
-        initialData: initialData.trial_claimed,
-        refetchOnMount: false
+    const refetchServer = trpc.dashboard.getDashboardData.useQuery(undefined, {
+        refetchOnMount: false,
+        refetchInterval: userData.servers.some(server => server.status === 'installing') ? 10000 : 0
     })
 
     const returnStatusButton = (status: string | null) => {
@@ -59,7 +55,7 @@ const UserData = ({ initialData }: Props) => {
 
     return (
         <div className='flex flex-col w-full max-w-[500px]'>
-            {!trialClaimed.data &&
+            {!userData.trial_claimed &&
                 <div className='py-5 w-full space-y-2 border-b'>
                     <Label className='text-primary text-lg'>Free Trial (3Days)</Label>
                     <p className='text-muted-foreground text-sm'>Try our coal plan free for 3 days. No payment needed.</p>
@@ -69,7 +65,7 @@ const UserData = ({ initialData }: Props) => {
                             <Button className='w-full'>CLAIM FREE TRIAL<Gift size={16} className='animate-bounce ml-2' /></Button>
                         } />
                 </div>}
-            <UserCredits initialData={initialData} />
+            <UserCredits initialData={userData} />
             <Separator />
             <div className='flex items-center py-5 gap-5 w-full justify-between'>
                 <Link href={process.env.NEXT_PUBLIC_APP_URL as string} target='_blank'>
@@ -81,7 +77,7 @@ const UserData = ({ initialData }: Props) => {
             </div>
             <div className='flex flex-wrap w-full gap-4'>
                 {
-                    data.length > 0 ? data.map((server, i) => {
+                    userData.servers.length > 0 ? userData.servers.map((server, i) => {
                         const sonicInfo: SonicInfo = JSON.parse(server.sonic_info || "{}")
                         return (
                             <Card key={i} className='w-full'>
@@ -90,7 +86,7 @@ const UserData = ({ initialData }: Props) => {
                                         <div>
                                             {server.name}
                                         </div>
-                                        <ServerSettings serverID={server.id} refetch={refetch} />
+                                        <ServerSettings serverID={server.id} refetch={refetchUserData} />
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className='flex flex-col gap-2 text-muted-foreground'>

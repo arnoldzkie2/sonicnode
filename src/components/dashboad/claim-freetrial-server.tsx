@@ -23,14 +23,10 @@ const ClaimFreeTrial = ({ eggs, trigger }: {
         egg: '',
     })
 
-    const userServers = trpc.server.getUserServers.useQuery(undefined, {
-        refetchOnMount: false,
-    })
-    const trialClaimed = trpc.user.checkFreeTrialClaimed.useQuery(undefined, {
-        initialData: false,
+    const { refetch } = trpc.dashboard.getDashboardData.useQuery(undefined, {
+        enabled: false,
         refetchOnMount: false
     })
-
 
     const createFreeTrial = trpc.server.createFreeTrialServer.useMutation({
         onError: (err) => {
@@ -39,10 +35,7 @@ const ClaimFreeTrial = ({ eggs, trigger }: {
             })
         },
         onSuccess: async () => {
-            await Promise.all([
-                trialClaimed.refetch(),
-                userServers.refetch()
-            ])
+            refetch()
             toast.success("Success! server created.", {
                 position: 'bottom-center'
             })

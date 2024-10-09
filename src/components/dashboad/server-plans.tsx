@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
+import { Card, CardContent } from '../ui/card'
 import Image from 'next/image'
 import { Cpu, Dot, GitFork, HardDrive, LoaderCircle, MemoryStick, Minus, Plus, Users, Wifi } from 'lucide-react'
 import { Label } from '../ui/label'
@@ -23,14 +23,15 @@ const ServerPlans = ({ eggs }: {
   const [selectedPlan, setSelectedPlan] = useState(2)
   const [selectedEgg, setSelectedEgg] = useState('')
 
-  const getUserServer = trpc.server.getUserServers.useQuery(undefined, {
-    refetchOnMount: false
+  const refetchServer = trpc.dashboard.getDashboardData.useQuery(undefined, {
+    refetchOnMount: false,
+    enabled: false
   })
 
   const createServer = trpc.server.createServer.useMutation({
     onSuccess: () => {
-      toast.success("Success! server created")
-      getUserServer.refetch()
+      refetchServer.refetch()
+      toast.success("Success! server created.")
     },
     onError: (err) => {
       toast.error(err.message)
