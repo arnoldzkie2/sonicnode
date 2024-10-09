@@ -30,7 +30,9 @@ export const POST = async (req: NextRequest) => {
         //update user balance
         const updateUserCoin = await db.users.update({
             where: { id: metadata.userID }, data: {
-                sonic_coin: user.sonic_coin + metadata.amount
+                sonic_coin: {
+                    increment: metadata.amount
+                }
             }
         })
         if (!updateUserCoin) return NextResponse.json({ msg: "Failed to update user coin" }, { status: 400 })

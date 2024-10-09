@@ -4,7 +4,6 @@ import z from 'zod'
 import { apiLimiter, sonicApi } from "@/lib/api";
 import db from "@/lib/db";
 import axios from "axios";
-import { SonicInfo } from "./serverRoute";
 import { getAuth } from "@/lib/nextauth";
 
 export const userRoute = {
@@ -26,6 +25,7 @@ export const userRoute = {
                 message: "Password does not matched."
             })
 
+            console.log("getting exsiting user")
             const [existingUsername, existingEmail] = await Promise.all([
                 db.users.findUnique({ where: { username: opts.input.username } }),
                 db.users.findUnique({ where: { email: opts.input.email } })
@@ -40,10 +40,13 @@ export const userRoute = {
                 message: "Email Already Exist"
             })
 
+            console.log("creating the user ")
             const { data } = await sonicApi.post('/users', {
                 ...opts.input,
                 first_name: 'Sonic', last_name: 'Node'
             })
+
+            console.log("done")
 
             if (data) {
 

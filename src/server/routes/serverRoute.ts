@@ -561,6 +561,11 @@ export const serverRoute = {
 
                 const nodeDescription: NodeDescription = JSON.parse(node.description as string)
 
+                if (!nodeDescription) throw new TRPCError({
+                    code: "BAD_REQUEST",
+                    message: "No available node for free trial please try again tomorrow."
+                })
+
                 const { maxPoints, totalPoints } = nodeDescription
                 const requiredPoints = planPoints
                 const remainingPoints = maxPoints - totalPoints
